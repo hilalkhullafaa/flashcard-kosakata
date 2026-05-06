@@ -220,11 +220,11 @@ class App {
 
             // Expandable content container
             const expandableContent = document.createElement('div');
-            expandableContent.className = 'overflow-hidden transition-all duration-400';
+            expandableContent.className = 'overflow-hidden transition-all duration-250';
             expandableContent.style.maxHeight = '0px';
             expandableContent.style.opacity = '0';
             expandableContent.style.transitionProperty = 'max-height, margin-top, opacity';
-            expandableContent.style.transitionDuration = '0.4s';
+            expandableContent.style.transitionDuration = '0.25s';
             expandableContent.style.transitionTimingFunction = 'ease-out';
 
             const rememberedTitle = document.createElement('div');
@@ -351,7 +351,7 @@ class App {
         titleContainer.appendChild(progressInfo);
 
         const expandIcon = document.createElement('span');
-        expandIcon.className = 'text-xl text-gray-600 dark:text-gray-400 flex-shrink-0 transition-transform duration-300';
+        expandIcon.className = 'hidden sm:inline text-xl text-gray-600 dark:text-gray-400 flex-shrink-0 transition-transform duration-300';
         expandIcon.textContent = '▼';
         expandIcon.id = `expand-icon-${source}`;
 
@@ -360,10 +360,10 @@ class App {
 
         const chaptersContainer = document.createElement('div');
         chaptersContainer.id = `chapters-${source}`;
-        chaptersContainer.className = 'px-4 overflow-hidden transition-all duration-400';
+        chaptersContainer.className = 'px-4 overflow-hidden transition-all duration-250';
         chaptersContainer.style.maxHeight = '0px';
         chaptersContainer.style.transitionProperty = 'max-height, padding';
-        chaptersContainer.style.transitionDuration = '0.4s';
+        chaptersContainer.style.transitionDuration = '0.25s';
         chaptersContainer.style.transitionTimingFunction = 'ease-out';
 
         if (chapters.length === 0) {
@@ -1293,7 +1293,7 @@ class App {
         answerSection.className = 'space-y-4';
 
         const inputGroup = document.createElement('div');
-        inputGroup.className = 'flex gap-3';
+        inputGroup.className = 'flex flex-col sm:flex-row gap-3';
 
         const answerInput = document.createElement('input');
         answerInput.type = 'text';
@@ -1303,7 +1303,7 @@ class App {
         
         const submitButton = document.createElement('button');
         submitButton.id = 'submit-guess';
-        submitButton.className = 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105';
+        submitButton.className = 'w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105';
         submitButton.textContent = 'Submit';
 
         inputGroup.appendChild(answerInput);
