@@ -125,8 +125,8 @@ export class DisplayController {
         // Hiragana/Katakana display
         const hiraganaDiv = document.createElement('div');
         hiraganaDiv.className = flashcard.kanji 
-            ? 'text-2xl sm:text-3xl md:text-4xl font-medium text-blue-600 dark:text-blue-400 break-words leading-tight' 
-            : 'text-4xl sm:text-5xl md:text-6xl font-bold text-blue-600 dark:text-blue-400 break-words leading-tight';
+            ? 'text-2xl sm:text-3xl md:text-4xl font-medium text-gray-700 dark:text-white break-words leading-tight' 
+            : 'text-4xl sm:text-5xl md:text-6xl font-bold text-gray-700 dark:text-white break-words leading-tight';
         hiraganaDiv.style.maxHeight = flashcard.kanji ? '4rem' : '6rem'; // Limit to ~2 lines
         hiraganaDiv.style.overflow = 'hidden';
         hiraganaDiv.style.display = '-webkit-box';

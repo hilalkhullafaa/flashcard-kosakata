@@ -1275,20 +1275,20 @@ class App {
         if (!modal || !overlay) return;
 
         modal.innerHTML = '';
-        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4';
 
         const container = document.createElement('div');
-        container.className = 'bg-gray-100 dark:bg-gray-900 rounded-lg shadow-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto';
+        container.className = 'bg-gray-100 dark:bg-gray-900 rounded-lg shadow-xl p-3 sm:p-6 max-w-4xl w-full h-[95vh] sm:max-h-[90vh] flex flex-col overflow-hidden';
 
         const header = document.createElement('div');
-        header.className = 'flex justify-between items-center mb-6';
+        header.className = 'flex justify-between items-center mb-3 sm:mb-6 flex-shrink-0';
 
         const titleEl = document.createElement('h2');
-        titleEl.className = 'text-2xl font-bold text-gray-900 dark:text-white';
+        titleEl.className = 'text-lg sm:text-2xl font-bold text-gray-900 dark:text-white';
         titleEl.textContent = title;
 
         const closeButton = document.createElement('button');
-        closeButton.className = 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl font-bold transition-colors duration-200';
+        closeButton.className = 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl sm:text-3xl font-bold transition-colors duration-200 flex-shrink-0';
         closeButton.textContent = '×';
         closeButton.addEventListener('click', () => this.closeModal());
 
@@ -1298,7 +1298,7 @@ class App {
         // Game container
         const gameContainer = document.createElement('div');
         gameContainer.id = 'guessing-game-container';
-        gameContainer.className = 'space-y-6';
+        gameContainer.className = 'flex-1 overflow-y-auto';
 
         container.appendChild(header);
         container.appendChild(gameContainer);
@@ -1329,17 +1329,17 @@ class App {
         // Progress info
         const info = displayController.getNavigationInfo();
         const progressBar = document.createElement('div');
-        progressBar.className = 'mb-4';
+        progressBar.className = 'mb-3 sm:mb-4';
         
         const progressText = document.createElement('div');
-        progressText.className = 'text-center text-gray-900 dark:text-white font-semibold mb-2';
+        progressText.className = 'text-center text-gray-900 dark:text-white font-semibold mb-1 sm:mb-2 text-sm sm:text-base';
         progressText.textContent = `Card ${info.current} of ${info.total}`;
         
         const progressBarBg = document.createElement('div');
-        progressBarBg.className = 'w-full bg-gray-300 dark:bg-gray-700 rounded-full h-3';
+        progressBarBg.className = 'w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2 sm:h-3';
         
         const progressBarFill = document.createElement('div');
-        progressBarFill.className = 'bg-blue-600 dark:bg-blue-400 h-3 rounded-full transition-all duration-300';
+        progressBarFill.className = 'bg-blue-600 dark:bg-blue-400 h-2 sm:h-3 rounded-full transition-all duration-300';
         progressBarFill.style.width = `${(info.current / info.total) * 100}%`;
         
         progressBarBg.appendChild(progressBarFill);
@@ -1348,14 +1348,24 @@ class App {
 
         // Flashcard front (question)
         const questionCard = document.createElement('div');
-        questionCard.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mb-6 min-h-[200px] flex flex-col items-center justify-center';
+        questionCard.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-8 mb-3 sm:mb-6 min-h-[120px] sm:min-h-[200px] flex flex-col items-center justify-center';
 
         const kanjiText = document.createElement('div');
-        kanjiText.className = 'text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4 text-center';
+        kanjiText.className = 'text-3xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4 text-center break-words leading-tight';
+        kanjiText.style.maxHeight = '4rem';
+        kanjiText.style.overflow = 'hidden';
+        kanjiText.style.display = '-webkit-box';
+        kanjiText.style.webkitLineClamp = '2';
+        kanjiText.style.webkitBoxOrient = 'vertical';
         kanjiText.textContent = flashcard.kanji || flashcard.hiragana;
 
         const hiraganaText = document.createElement('div');
-        hiraganaText.className = 'text-2xl md:text-3xl text-blue-600 dark:text-blue-400 text-center';
+        hiraganaText.className = 'text-lg sm:text-2xl md:text-3xl text-gray-700 dark:text-white text-center break-words leading-tight';
+        hiraganaText.style.maxHeight = '3rem';
+        hiraganaText.style.overflow = 'hidden';
+        hiraganaText.style.display = '-webkit-box';
+        hiraganaText.style.webkitLineClamp = '2';
+        hiraganaText.style.webkitBoxOrient = 'vertical';
         hiraganaText.textContent = flashcard.hiragana;
 
         questionCard.appendChild(kanjiText);
@@ -1366,59 +1376,59 @@ class App {
         // Answer input section
         const answerSection = document.createElement('div');
         answerSection.id = 'answer-section';
-        answerSection.className = 'space-y-4';
+        answerSection.className = 'space-y-2 sm:space-y-4';
 
         const inputGroup = document.createElement('div');
-        inputGroup.className = 'flex flex-col sm:flex-row gap-3';
+        inputGroup.className = 'flex flex-col gap-2 sm:gap-3';
 
         const answerInput = document.createElement('input');
         answerInput.type = 'text';
         answerInput.id = 'guess-input';
         answerInput.placeholder = 'Type your answer...';
-        answerInput.className = 'flex-1 px-4 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-lg focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-colors duration-200';
+        answerInput.className = 'w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base sm:text-lg focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-colors duration-200';
+        
+        const showAnswerButton = document.createElement('button');
+        showAnswerButton.id = 'show-answer';
+        showAnswerButton.className = 'w-full bg-gray-500 hover:bg-gray-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-200';
+        showAnswerButton.textContent = 'Show Answer';
         
         const submitButton = document.createElement('button');
         submitButton.id = 'submit-guess';
-        submitButton.className = 'w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105';
+        submitButton.className = 'w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-200 transform hover:scale-105';
         submitButton.textContent = 'Submit';
 
         inputGroup.appendChild(answerInput);
+        inputGroup.appendChild(showAnswerButton);
         inputGroup.appendChild(submitButton);
 
-        const showAnswerButton = document.createElement('button');
-        showAnswerButton.id = 'show-answer';
-        showAnswerButton.className = 'w-full bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200';
-        showAnswerButton.textContent = 'Show Answer';
-
         answerSection.appendChild(inputGroup);
-        answerSection.appendChild(showAnswerButton);
 
         // Result section (hidden initially)
         const resultSection = document.createElement('div');
         resultSection.id = 'result-section';
-        resultSection.className = 'hidden space-y-4';
+        resultSection.className = 'hidden space-y-2 sm:space-y-4';
 
         const userAnswerDiv = document.createElement('div');
         userAnswerDiv.id = 'user-answer';
-        userAnswerDiv.className = 'bg-blue-50 dark:bg-blue-900 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-4';
+        userAnswerDiv.className = 'bg-blue-50 dark:bg-blue-900 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-3 sm:p-4';
 
         const correctAnswerDiv = document.createElement('div');
-        correctAnswerDiv.className = 'bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg p-6';
+        correctAnswerDiv.className = 'bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 sm:p-6';
 
         const correctLabel = document.createElement('div');
-        correctLabel.className = 'text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2';
+        correctLabel.className = 'text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:mb-2';
         correctLabel.textContent = 'Correct Answer:';
 
         const meaningText = document.createElement('div');
-        meaningText.className = 'text-2xl font-bold text-green-600 dark:text-green-400 mb-3';
+        meaningText.className = 'text-lg sm:text-2xl font-bold text-green-600 dark:text-green-400 mb-2 sm:mb-3 break-words leading-snug';
         meaningText.textContent = flashcard.meaning;
 
         const romajiText = document.createElement('div');
-        romajiText.className = 'text-lg text-gray-700 dark:text-gray-300 mb-2';
+        romajiText.className = 'text-sm sm:text-lg text-gray-700 dark:text-gray-300 mb-1 sm:mb-2 break-words';
         romajiText.textContent = `Romaji: ${flashcard.romaji}`;
 
         const sourceText = document.createElement('div');
-        sourceText.className = 'text-sm text-gray-600 dark:text-gray-400';
+        sourceText.className = 'text-xs sm:text-sm text-gray-600 dark:text-gray-400';
         
         // Show chapter(s) based on context
         const chapterDisplay = displayController.currentContext.type === ViewContextType.CHAPTER 
@@ -1436,10 +1446,10 @@ class App {
 
         // Navigation buttons
         const navigation = document.createElement('div');
-        navigation.className = 'flex justify-between items-center mt-6';
+        navigation.className = 'flex justify-between items-center mt-3 sm:mt-6 gap-2';
 
         const prevButton = document.createElement('button');
-        prevButton.className = 'bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105';
+        prevButton.className = 'bg-gray-600 hover:bg-gray-700 text-white px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105';
         prevButton.textContent = '← Previous';
         prevButton.disabled = !info.hasPrevious;
         prevButton.addEventListener('click', () => {
@@ -1450,7 +1460,7 @@ class App {
 
         const nextButton = document.createElement('button');
         nextButton.id = 'next-guess-card';
-        nextButton.className = 'bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105';
+        nextButton.className = 'bg-gray-600 hover:bg-gray-700 text-white px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105';
         nextButton.textContent = 'Next →';
         nextButton.disabled = !info.hasNext;
         nextButton.addEventListener('click', () => {
@@ -1510,12 +1520,12 @@ class App {
 
         if (userAnswer && userAnswerDiv) {
             userAnswerDiv.innerHTML = `
-                <div class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Your Answer:</div>
-                <div class="text-xl font-bold text-blue-700 dark:text-blue-300">${userAnswer}</div>
+                <div class="text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">Your Answer:</div>
+                <div class="text-base sm:text-xl font-bold text-blue-700 dark:text-blue-300 break-words">${userAnswer}</div>
             `;
         } else if (userAnswerDiv) {
             userAnswerDiv.innerHTML = `
-                <div class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">You chose to reveal the answer</div>
+                <div class="text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">You chose to reveal the answer</div>
             `;
         }
     }
@@ -1540,16 +1550,25 @@ class App {
         const mainView = document.getElementById('main-view');
         if (!mainView) return;
 
+        // Save cursor position before clearing
+        const searchInput = document.getElementById('search-input');
+        const cursorPosition = searchInput ? searchInput.selectionStart : 0;
+
         mainView.innerHTML = '';
 
         // Keep search input
         const header = this.createHeader();
         mainView.appendChild(header);
         
-        // Set search input value
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) {
-            searchInput.value = query;
+        // Restore search input value and cursor position
+        const newSearchInput = document.getElementById('search-input');
+        if (newSearchInput) {
+            newSearchInput.value = query;
+            // Restore cursor position after a short delay to ensure DOM is ready
+            setTimeout(() => {
+                newSearchInput.setSelectionRange(cursorPosition, cursorPosition);
+                newSearchInput.focus();
+            }, 0);
         }
 
         const title = document.createElement('h2');
