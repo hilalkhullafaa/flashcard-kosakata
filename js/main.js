@@ -59,10 +59,16 @@ class App {
      * Set up global event listeners
      */
     setupEventListeners() {
-        // Add flashcard button
+        // Add flashcard button (mobile FAB)
         const addButton = document.getElementById('add-flashcard-btn');
         if (addButton) {
             addButton.addEventListener('click', () => this.showAddFlashcardForm());
+        }
+        
+        // Add flashcard button (desktop)
+        const addButtonDesktop = document.getElementById('add-flashcard-btn-desktop');
+        if (addButtonDesktop) {
+            addButtonDesktop.addEventListener('click', () => this.showAddFlashcardForm());
         }
     }
 
