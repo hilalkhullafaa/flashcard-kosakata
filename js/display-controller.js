@@ -161,23 +161,13 @@ export class DisplayController {
 
         // Meaning
         const meaningDiv = document.createElement('div');
-        meaningDiv.className = 'text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6 break-words leading-tight';
-        meaningDiv.style.maxHeight = '4rem'; // Limit to ~2 lines
-        meaningDiv.style.overflow = 'hidden';
-        meaningDiv.style.display = '-webkit-box';
-        meaningDiv.style.webkitLineClamp = '2';
-        meaningDiv.style.webkitBoxOrient = 'vertical';
+        meaningDiv.className = 'text-xl sm:text-2xl md:text-3xl font-bold mb-4 md:mb-6 break-words leading-snug';
         meaningDiv.textContent = flashcard.meaning;
         topContent.appendChild(meaningDiv);
 
         // Romaji
         const romajiDiv = document.createElement('div');
-        romajiDiv.className = 'text-lg sm:text-xl md:text-2xl mb-4 md:mb-8 opacity-90 font-medium break-words leading-tight';
-        romajiDiv.style.maxHeight = '3rem'; // Limit to ~2 lines
-        romajiDiv.style.overflow = 'hidden';
-        romajiDiv.style.display = '-webkit-box';
-        romajiDiv.style.webkitLineClamp = '2';
-        romajiDiv.style.webkitBoxOrient = 'vertical';
+        romajiDiv.className = 'text-base sm:text-lg md:text-xl mb-4 md:mb-8 opacity-90 font-medium break-words leading-snug';
         romajiDiv.textContent = flashcard.romaji;
         topContent.appendChild(romajiDiv);
 
