@@ -1023,21 +1023,21 @@ class App {
         displayController.setCurrentFlashcards(flashcards, context);
 
         modal.innerHTML = '';
-        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-0 overflow-hidden';
 
         const container = document.createElement('div');
-        container.className = 'bg-transparent w-full h-full flex flex-col items-center justify-center';
+        container.className = 'bg-gradient-to-br from-blue-600 to-purple-700 dark:from-gray-900 dark:to-gray-800 w-full h-full flex flex-col overflow-hidden';
 
         // Header with close button
         const header = document.createElement('div');
-        header.className = 'w-full max-w-4xl flex justify-between items-center mb-3 sm:mb-4 px-2 sm:px-4';
+        header.className = 'w-full flex justify-between items-center px-4 sm:px-6 py-4 sm:py-5 flex-shrink-0';
 
         const titleEl = document.createElement('h2');
-        titleEl.className = 'text-xl sm:text-2xl md:text-3xl font-bold text-white drop-shadow-lg';
+        titleEl.className = 'text-xl sm:text-2xl md:text-3xl font-bold text-white';
         titleEl.textContent = title;
 
         const closeButton = document.createElement('button');
-        closeButton.className = 'text-white hover:text-gray-200 text-3xl sm:text-4xl font-bold transition-colors duration-200 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full hover:bg-white hover:bg-opacity-20';
+        closeButton.className = 'text-white hover:text-gray-200 text-3xl sm:text-4xl font-bold transition-colors duration-200 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full hover:bg-white hover:bg-opacity-20 flex-shrink-0';
         closeButton.textContent = '×';
         closeButton.addEventListener('click', () => this.closeModal());
 
@@ -1047,7 +1047,7 @@ class App {
         // Flashcard display (centered, no scroll)
         const flashcardContainer = document.createElement('div');
         flashcardContainer.id = 'flashcard-display';
-        flashcardContainer.className = 'w-full max-w-3xl flex-1 flex items-center justify-center px-2 sm:px-4';
+        flashcardContainer.className = 'w-full flex-1 flex items-center justify-center px-4 sm:px-6 overflow-hidden';
 
         // Navigation with counter
         const navigation = this.createFlashcardNavigation();
@@ -1073,7 +1073,7 @@ class App {
      */
     createFlashcardControls() {
         const controls = document.createElement('div');
-        controls.className = 'w-full max-w-4xl flex gap-2 sm:gap-3 mt-3 sm:mt-4 px-2 sm:px-4 justify-center flex-wrap';
+        controls.className = 'w-full flex gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 justify-center flex-wrap flex-shrink-0';
 
         // Filter dropdown
         const filterSelect = document.createElement('select');
@@ -1136,7 +1136,7 @@ class App {
      */
     createFlashcardNavigation() {
         const nav = document.createElement('div');
-        nav.className = 'w-full max-w-4xl flex justify-between items-center px-2 sm:px-4 mt-4 sm:mt-6 gap-2 sm:gap-4';
+        nav.className = 'w-full flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4 gap-2 sm:gap-4 flex-shrink-0';
 
         const prevButton = document.createElement('button');
         prevButton.id = 'prev-flashcard';
@@ -1146,7 +1146,7 @@ class App {
 
         const info = document.createElement('div');
         info.id = 'flashcard-info';
-        info.className = 'text-white font-bold text-base sm:text-xl drop-shadow-lg';
+        info.className = 'text-white font-bold text-base sm:text-xl';
 
         const nextButton = document.createElement('button');
         nextButton.id = 'next-flashcard';
@@ -1275,20 +1275,20 @@ class App {
         if (!modal || !overlay) return;
 
         modal.innerHTML = '';
-        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4';
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-0 overflow-hidden';
 
         const container = document.createElement('div');
-        container.className = 'bg-gray-100 dark:bg-gray-900 rounded-lg shadow-xl p-3 sm:p-6 max-w-4xl w-full h-[95vh] sm:max-h-[90vh] flex flex-col overflow-hidden';
+        container.className = 'bg-white dark:bg-gray-800 w-full h-full sm:rounded-lg sm:shadow-xl sm:max-w-4xl sm:h-[90vh] flex flex-col overflow-hidden';
 
         const header = document.createElement('div');
-        header.className = 'flex justify-between items-center mb-3 sm:mb-6 flex-shrink-0';
+        header.className = 'flex justify-between items-center px-4 sm:px-6 py-4 sm:py-5 flex-shrink-0 border-b border-gray-200 dark:border-gray-700';
 
         const titleEl = document.createElement('h2');
         titleEl.className = 'text-lg sm:text-2xl font-bold text-gray-900 dark:text-white';
         titleEl.textContent = title;
 
         const closeButton = document.createElement('button');
-        closeButton.className = 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl sm:text-3xl font-bold transition-colors duration-200 flex-shrink-0';
+        closeButton.className = 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-3xl font-bold transition-colors duration-200 flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700';
         closeButton.textContent = '×';
         closeButton.addEventListener('click', () => this.closeModal());
 
@@ -1298,7 +1298,7 @@ class App {
         // Game container
         const gameContainer = document.createElement('div');
         gameContainer.id = 'guessing-game-container';
-        gameContainer.className = 'flex-1 overflow-y-auto';
+        gameContainer.className = 'flex-1 overflow-y-auto px-4 sm:px-6 py-4';
 
         container.appendChild(header);
         container.appendChild(gameContainer);
