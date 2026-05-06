@@ -329,7 +329,7 @@ class App {
         titleAndBadge.appendChild(badge);
 
         // Get progress for this source
-        const sourceContext = { type: 'SOURCE', source: source };
+        const sourceContext = { type: ViewContextType.SOURCE, source: source };
         const hiraganaProgress = progressTracker.getHiraganaProgress(sourceContext);
         const kanjiProgress = progressTracker.getKanjiProgress(sourceContext);
 

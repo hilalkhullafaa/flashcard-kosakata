@@ -112,7 +112,12 @@ export class DisplayController {
         // Kanji display (if exists)
         if (flashcard.kanji && flashcard.kanji.trim() !== '') {
             const kanjiDiv = document.createElement('div');
-            kanjiDiv.className = 'text-6xl sm:text-7xl md:text-8xl font-bold text-gray-900 dark:text-white mb-4 md:mb-6';
+            kanjiDiv.className = 'text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-gray-900 dark:text-white mb-4 md:mb-6 break-words leading-tight';
+            kanjiDiv.style.maxHeight = '9rem'; // Limit to ~3 lines
+            kanjiDiv.style.overflow = 'hidden';
+            kanjiDiv.style.display = '-webkit-box';
+            kanjiDiv.style.webkitLineClamp = '3';
+            kanjiDiv.style.webkitBoxOrient = 'vertical';
             kanjiDiv.textContent = flashcard.kanji;
             frontDiv.appendChild(kanjiDiv);
         }
@@ -120,8 +125,13 @@ export class DisplayController {
         // Hiragana/Katakana display
         const hiraganaDiv = document.createElement('div');
         hiraganaDiv.className = flashcard.kanji 
-            ? 'text-3xl sm:text-4xl md:text-5xl font-medium text-blue-600 dark:text-blue-400' 
-            : 'text-6xl sm:text-7xl md:text-8xl font-bold text-blue-600 dark:text-blue-400';
+            ? 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium text-blue-600 dark:text-blue-400 break-words leading-tight' 
+            : 'text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-blue-600 dark:text-blue-400 break-words leading-tight';
+        hiraganaDiv.style.maxHeight = flashcard.kanji ? '6rem' : '9rem'; // Limit to ~3 lines
+        hiraganaDiv.style.overflow = 'hidden';
+        hiraganaDiv.style.display = '-webkit-box';
+        hiraganaDiv.style.webkitLineClamp = '3';
+        hiraganaDiv.style.webkitBoxOrient = 'vertical';
         hiraganaDiv.textContent = flashcard.hiragana;
         frontDiv.appendChild(hiraganaDiv);
 
