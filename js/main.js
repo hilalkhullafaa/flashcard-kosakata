@@ -146,6 +146,7 @@ class App {
         title.textContent = '📊 Progress Keseluruhan';
 
         const progress = progressTracker.getOverallProgress();
+        const overallContext = { type: ViewContextType.ALL };
 
         const statsContainer = document.createElement('div');
         statsContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-4 mb-4';
@@ -153,13 +154,15 @@ class App {
         // Hiragana/Katakana progress
         const hiraganaStats = this.createProgressCard(
             'Kosakata Hiragana/Katakana',
-            progress.hiragana
+            progress.hiragana,
+            overallContext
         );
 
         // Kanji progress
         const kanjiStats = this.createProgressCard(
             'Kosakata Kanji',
-            progress.kanji
+            progress.kanji,
+            overallContext
         );
 
         statsContainer.appendChild(hiraganaStats);
@@ -194,9 +197,9 @@ class App {
     /**
      * Create progress card with remembered vocabulary list
      */
-    createProgressCard(title, stats) {
+    createProgressCard(title, stats, context = null) {
         const card = document.createElement('div');
-        card.className = 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 rounded-lg p-4 border border-blue-200 dark:border-gray-600 cursor-pointer transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg active:translate-y-0';
+        card.className = 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 rounded-lg p-4 border border-blue-200 dark:border-gray-600 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg';
 
         const titleEl = document.createElement('h3');
         titleEl.className = 'text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300';
@@ -212,83 +215,17 @@ class App {
         // Add remembered vocabulary list if available
         if (stats.rememberedList && stats.rememberedList.length > 0) {
             // View details button
-            const viewDetailsBtn = document.createElement('div');
+            const viewDetailsBtn = document.createElement('button');
             viewDetailsBtn.className = 'inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 font-semibold cursor-pointer transition-all duration-200 hover:text-blue-700 dark:hover:text-blue-300 hover:translate-x-1 mt-2';
-            viewDetailsBtn.innerHTML = '<span>Lihat Detail</span> <span class="inline-block transition-transform duration-300 text-xs">▼</span>';
+            viewDetailsBtn.innerHTML = '<span>Lihat Detail</span> <span class="inline-block text-xs">→</span>';
+            
+            // Click handler to open full view
+            viewDetailsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.showRememberedVocabularyView(title, stats.rememberedList, context);
+            });
 
             card.appendChild(viewDetailsBtn);
-
-            // Expandable content container
-            const expandableContent = document.createElement('div');
-            expandableContent.className = 'overflow-hidden transition-all duration-250';
-            expandableContent.style.maxHeight = '0px';
-            expandableContent.style.opacity = '0';
-            expandableContent.style.transitionProperty = 'max-height, margin-top, opacity';
-            expandableContent.style.transitionDuration = '0.25s';
-            expandableContent.style.transitionTimingFunction = 'ease-out';
-
-            const rememberedTitle = document.createElement('div');
-            rememberedTitle.className = 'text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2';
-            rememberedTitle.textContent = '✅ Sudah Dihapal:';
-            expandableContent.appendChild(rememberedTitle);
-
-            const rememberedContainer = document.createElement('div');
-            rememberedContainer.className = 'space-y-1 overflow-y-auto';
-            rememberedContainer.style.maxHeight = '300px';
-            rememberedContainer.style.scrollbarWidth = 'thin';
-            rememberedContainer.style.scrollbarColor = '#cbd5e1 #f1f1f1';
-
-            stats.rememberedList.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'text-xs bg-white dark:bg-gray-600 rounded px-2 py-1.5 flex flex-col gap-1';
-                
-                // Top row: vocabulary and meaning
-                const topRow = document.createElement('div');
-                topRow.className = 'flex justify-between items-center gap-2';
-                
-                const vocabSpan = document.createElement('span');
-                vocabSpan.className = 'font-medium text-gray-900 dark:text-white truncate';
-                vocabSpan.textContent = item.identifier;
-                
-                const meaningSpan = document.createElement('span');
-                meaningSpan.className = 'text-gray-600 dark:text-gray-300 text-xs flex-shrink-0';
-                meaningSpan.textContent = item.meaning;
-                
-                topRow.appendChild(vocabSpan);
-                topRow.appendChild(meaningSpan);
-                itemDiv.appendChild(topRow);
-                
-                // Bottom row: chapters (if available)
-                if (item.chapters && item.chapters.length > 0) {
-                    const chaptersRow = document.createElement('div');
-                    chaptersRow.className = 'text-xs text-gray-500 dark:text-gray-400 italic';
-                    chaptersRow.textContent = `📖 Bab ${item.chapters.join(', ')}`;
-                    itemDiv.appendChild(chaptersRow);
-                }
-                
-                rememberedContainer.appendChild(itemDiv);
-            });
-
-            expandableContent.appendChild(rememberedContainer);
-            card.appendChild(expandableContent);
-
-            // Click handler to toggle expansion
-            card.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isExpanded = expandableContent.style.maxHeight && expandableContent.style.maxHeight !== '0px';
-                
-                if (isExpanded) {
-                    expandableContent.style.maxHeight = '0px';
-                    expandableContent.style.marginTop = '0px';
-                    expandableContent.style.opacity = '0';
-                    viewDetailsBtn.innerHTML = '<span>Lihat Detail</span> <span class="inline-block transition-transform duration-300 text-xs">▼</span>';
-                } else {
-                    expandableContent.style.maxHeight = '500px';
-                    expandableContent.style.marginTop = '1rem';
-                    expandableContent.style.opacity = '1';
-                    viewDetailsBtn.innerHTML = '<span>Sembunyikan</span> <span class="inline-block transition-transform duration-300 text-xs" style="transform: rotate(180deg);">▼</span>';
-                }
-            });
         } else if (stats.remembered === 0) {
             const emptyMessage = document.createElement('div');
             emptyMessage.className = 'text-xs text-gray-500 dark:text-gray-400 italic mt-2';
@@ -376,8 +313,8 @@ class App {
             const sourceProgressContainer = document.createElement('div');
             sourceProgressContainer.className = 'mb-4 grid grid-cols-1 md:grid-cols-2 gap-3';
 
-            const hiraganaCard = this.createProgressCard('Hiragana/Katakana', hiraganaProgress);
-            const kanjiCard = this.createProgressCard('Kanji', kanjiProgress);
+            const hiraganaCard = this.createProgressCard('Hiragana/Katakana', hiraganaProgress, sourceContext);
+            const kanjiCard = this.createProgressCard('Kanji', kanjiProgress, sourceContext);
 
             sourceProgressContainer.appendChild(hiraganaCard);
             sourceProgressContainer.appendChild(kanjiCard);
@@ -940,6 +877,129 @@ class App {
         const flashcards = displayController.getFlashcardsForAllSources();
         const context = new ViewContext(ViewContextType.ALL);
         this.showFlashcardsView(flashcards, context, 'All Flashcards');
+    }
+
+    /**
+     * Show remembered vocabulary view
+     * Displays all remembered vocabulary in a full-screen list view
+     */
+    showRememberedVocabularyView(title, rememberedList, context = null) {
+        const modal = document.getElementById('modal-container');
+        const overlay = document.getElementById('modal-overlay');
+        
+        if (!modal || !overlay) return;
+
+        modal.innerHTML = '';
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
+
+        const container = document.createElement('div');
+        container.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col';
+
+        // Header
+        const header = document.createElement('div');
+        header.className = 'p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center';
+
+        const headerTitle = document.createElement('h2');
+        headerTitle.className = 'text-xl sm:text-2xl font-bold text-gray-900 dark:text-white';
+        headerTitle.textContent = `✅ ${title} - Sudah Dihapal`;
+
+        const closeButton = document.createElement('button');
+        closeButton.className = 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-3xl font-bold transition-colors duration-200 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700';
+        closeButton.textContent = '×';
+        closeButton.addEventListener('click', () => this.closeModal());
+
+        header.appendChild(headerTitle);
+        header.appendChild(closeButton);
+
+        // Count info
+        const countInfo = document.createElement('div');
+        countInfo.className = 'px-4 sm:px-6 py-3 bg-blue-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600';
+        countInfo.innerHTML = `<span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Total: <span class="text-blue-600 dark:text-blue-400">${rememberedList.length}</span> kosakata</span>`;
+
+        // Content - scrollable list
+        const content = document.createElement('div');
+        content.className = 'flex-1 overflow-y-auto p-4 sm:p-6';
+
+        const list = document.createElement('div');
+        list.className = 'space-y-3';
+
+        rememberedList.forEach((item, index) => {
+            const itemCard = document.createElement('div');
+            itemCard.className = 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 rounded-lg p-4 border border-blue-200 dark:border-gray-600 transition-all duration-200 hover:shadow-md';
+
+            // Number badge
+            const numberBadge = document.createElement('div');
+            numberBadge.className = 'inline-block bg-blue-600 dark:bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full mb-2';
+            numberBadge.textContent = `#${index + 1}`;
+
+            // Vocabulary row
+            const vocabRow = document.createElement('div');
+            vocabRow.className = 'flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2';
+
+            const vocabText = document.createElement('div');
+            vocabText.className = 'flex flex-col gap-1';
+
+            // Main vocabulary (Hiragana or Kanji)
+            const mainVocab = document.createElement('div');
+            mainVocab.className = 'text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white';
+            mainVocab.textContent = item.identifier;
+
+            // Secondary vocabulary (show both if available)
+            if (item.kanji && item.hiragana && item.identifier !== item.hiragana) {
+                const secondaryVocab = document.createElement('div');
+                secondaryVocab.className = 'text-lg sm:text-xl text-blue-600 dark:text-blue-400 font-medium';
+                secondaryVocab.textContent = item.hiragana;
+                vocabText.appendChild(mainVocab);
+                vocabText.appendChild(secondaryVocab);
+            } else {
+                vocabText.appendChild(mainVocab);
+            }
+
+            const meaning = document.createElement('div');
+            meaning.className = 'text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300 sm:text-right';
+            meaning.textContent = item.meaning;
+
+            vocabRow.appendChild(vocabText);
+            vocabRow.appendChild(meaning);
+
+            // Chapters info
+            if (item.chapters && item.chapters.length > 0) {
+                const chaptersInfo = document.createElement('div');
+                chaptersInfo.className = 'text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2';
+                chaptersInfo.innerHTML = `<span class="font-medium">📖 Bab:</span> <span class="font-semibold text-blue-600 dark:text-blue-400">${item.chapters.join(', ')}</span>`;
+                itemCard.appendChild(numberBadge);
+                itemCard.appendChild(vocabRow);
+                itemCard.appendChild(chaptersInfo);
+            } else {
+                itemCard.appendChild(numberBadge);
+                itemCard.appendChild(vocabRow);
+            }
+
+            list.appendChild(itemCard);
+        });
+
+        content.appendChild(list);
+
+        // Footer with close button
+        const footer = document.createElement('div');
+        footer.className = 'p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end';
+
+        const closeFooterButton = document.createElement('button');
+        closeFooterButton.className = 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-200';
+        closeFooterButton.textContent = 'Tutup';
+        closeFooterButton.addEventListener('click', () => this.closeModal());
+
+        footer.appendChild(closeFooterButton);
+
+        container.appendChild(header);
+        container.appendChild(countInfo);
+        container.appendChild(content);
+        container.appendChild(footer);
+
+        modal.appendChild(container);
+
+        modal.classList.remove('hidden');
+        overlay.classList.remove('hidden');
     }
 
     /**
