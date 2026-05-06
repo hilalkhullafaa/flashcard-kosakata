@@ -104,7 +104,7 @@ export class DisplayController {
         // Checklist indicator for remembered flashcards
         if (flashcard.memoryStatus) {
             const checklistBadge = document.createElement('div');
-            checklistBadge.className = 'absolute top-4 right-4 bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg shadow-lg';
+            checklistBadge.className = 'absolute top-4 right-4 bg-yellow-500 dark:bg-yellow-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg shadow-lg';
             checklistBadge.textContent = '✓';
             frontDiv.appendChild(checklistBadge);
         }
@@ -217,7 +217,7 @@ export class DisplayController {
 
         const rememberedButton = document.createElement('button');
         rememberedButton.className = (flashcard.memoryStatus 
-            ? 'memory-button flex-1 bg-green-500 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base shadow-lg'
+            ? 'memory-button flex-1 bg-yellow-500 dark:bg-yellow-600 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base shadow-lg'
             : 'memory-button flex-1 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base border-2 border-white border-opacity-50') + ' transition-all duration-300';
         rememberedButton.textContent = flashcard.memoryStatus ? '✅ Sudah Ingat' : '✓ Sudah Ingat';
         rememberedButton.onclick = (e) => {
@@ -226,8 +226,13 @@ export class DisplayController {
             // Change button color/background with animation
             rememberedButton.style.transition = 'all 0.2s ease';
             rememberedButton.style.transform = 'scale(1.1)';
-            rememberedButton.style.backgroundColor = '#10b981'; // green-500
-            rememberedButton.style.boxShadow = '0 10px 25px rgba(16, 185, 129, 0.5)';
+            
+            // Check if dark mode is active
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            rememberedButton.style.backgroundColor = isDarkMode ? '#CA8A04' : '#EAB308'; // yellow-600 for dark, yellow-500 for light
+            rememberedButton.style.boxShadow = isDarkMode 
+                ? '0 10px 25px rgba(202, 138, 4, 0.5)' 
+                : '0 10px 25px rgba(234, 179, 8, 0.5)';
             
             // Update memory status
             this.toggleMemoryStatus(flashcard, true);

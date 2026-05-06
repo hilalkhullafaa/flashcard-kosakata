@@ -180,13 +180,13 @@ class App {
 
         // View all flashcards button
         const viewAllButton = document.createElement('button');
-        viewAllButton.className = 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
+        viewAllButton.className = 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
         viewAllButton.textContent = '📚 Lihat Semua';
         viewAllButton.addEventListener('click', () => this.showAllFlashcards());
 
         // Guessing game button
         const guessingButton = document.createElement('button');
-        guessingButton.className = 'bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
+        guessingButton.className = 'bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
         guessingButton.textContent = '🎮 Permainan';
         guessingButton.addEventListener('click', () => this.showGuessingGame(null, null));
 
@@ -341,7 +341,7 @@ class App {
             sourceButtons.className = 'flex flex-wrap gap-2';
 
             const viewAllButton = document.createElement('button');
-            viewAllButton.className = 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
+            viewAllButton.className = 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
             viewAllButton.textContent = '📚 Lihat Semua';
             viewAllButton.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -349,7 +349,7 @@ class App {
             });
 
             const manageButton = document.createElement('button');
-            manageButton.className = 'bg-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
+            manageButton.className = 'bg-gray-600 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-800 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
             manageButton.textContent = '⚙️ Kelola';
             manageButton.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -357,7 +357,7 @@ class App {
             });
 
             const gameButton = document.createElement('button');
-            gameButton.className = 'bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
+            gameButton.className = 'bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
             gameButton.textContent = '🎮 Permainan';
             gameButton.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -414,7 +414,7 @@ class App {
         buttonsContainer.className = 'flex flex-col gap-2';
 
         const viewButton = document.createElement('button');
-        viewButton.className = 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200';
+        viewButton.className = 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200';
         viewButton.textContent = '👁️ Lihat';
         viewButton.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -422,7 +422,7 @@ class App {
         });
 
         const manageButton = document.createElement('button');
-        manageButton.className = 'bg-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200';
+        manageButton.className = 'bg-gray-600 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-800 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200';
         manageButton.textContent = '⚙️ Kelola';
         manageButton.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -430,7 +430,7 @@ class App {
         });
 
         const gameButton = document.createElement('button');
-        gameButton.className = 'bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200';
+        gameButton.className = 'bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200';
         gameButton.textContent = '🎮 Main';
         gameButton.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -519,7 +519,7 @@ class App {
 
         const submitButton = document.createElement('button');
         submitButton.type = 'submit';
-        submitButton.className = 'flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200';
+        submitButton.className = 'flex-1 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200';
         submitButton.textContent = flashcard ? 'Update' : 'Add';
 
         const cancelButton = document.createElement('button');
@@ -775,7 +775,7 @@ class App {
 
         // Edit button
         const editButton = document.createElement('button');
-        editButton.className = 'action-btn flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200';
+        editButton.className = 'action-btn flex-1 sm:flex-none bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200';
         editButton.textContent = '✏️ Edit';
         editButton.addEventListener('click', () => {
             this.closeModal();
@@ -784,7 +784,7 @@ class App {
 
         // Delete button
         const deleteButton = document.createElement('button');
-        deleteButton.className = 'action-btn flex-1 sm:flex-none bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200';
+        deleteButton.className = 'action-btn flex-1 sm:flex-none bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200';
         deleteButton.textContent = '🗑️ Hapus';
         deleteButton.addEventListener('click', () => {
             const result = flashcardManager.deleteFlashcard(flashcard.id);
@@ -935,7 +935,7 @@ class App {
 
             // Number badge
             const numberBadge = document.createElement('div');
-            numberBadge.className = 'inline-block bg-blue-600 dark:bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full mb-2';
+            numberBadge.className = 'inline-block bg-blue-500 dark:bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full mb-2';
             numberBadge.textContent = `#${index + 1}`;
 
             // Vocabulary row
@@ -991,7 +991,7 @@ class App {
         footer.className = 'p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end';
 
         const closeFooterButton = document.createElement('button');
-        closeFooterButton.className = 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-200';
+        closeFooterButton.className = 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-200';
         closeFooterButton.textContent = 'Tutup';
         closeFooterButton.addEventListener('click', () => this.closeModal());
 
@@ -1298,7 +1298,7 @@ class App {
         // Game container
         const gameContainer = document.createElement('div');
         gameContainer.id = 'guessing-game-container';
-        gameContainer.className = 'flex-1 overflow-y-auto px-4 sm:px-6 py-4';
+        gameContainer.className = 'flex-1 flex flex-col overflow-hidden px-4 sm:px-6 py-4';
 
         container.appendChild(header);
         container.appendChild(gameContainer);
@@ -1339,7 +1339,7 @@ class App {
         progressBarBg.className = 'w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2 sm:h-3';
         
         const progressBarFill = document.createElement('div');
-        progressBarFill.className = 'bg-blue-600 dark:bg-blue-400 h-2 sm:h-3 rounded-full transition-all duration-300';
+        progressBarFill.className = 'bg-blue-500 dark:bg-blue-600 h-2 sm:h-3 rounded-full transition-all duration-300';
         progressBarFill.style.width = `${(info.current / info.total) * 100}%`;
         
         progressBarBg.appendChild(progressBarFill);
@@ -1394,7 +1394,7 @@ class App {
         
         const submitButton = document.createElement('button');
         submitButton.id = 'submit-guess';
-        submitButton.className = 'w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-200 transform hover:scale-105';
+        submitButton.className = 'w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-200 transform hover:scale-105';
         submitButton.textContent = 'Submit';
 
         inputGroup.appendChild(answerInput);
@@ -1635,3 +1635,4 @@ class App {
 document.addEventListener('DOMContentLoaded', () => {
     new App();
 });
+
