@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Storage - Japanese Flashcard App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+        <div class="text-center mb-6">
+            <div class="text-6xl mb-4">🗑️</div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Clear Storage</h1>
+            <p class="text-gray-600">Hapus semua data flashcard yang tersimpan</p>
+        </div>
+
+        <div class="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-6">
+            <div class="flex items-start gap-3">
+                <div class="text-2xl">⚠️</div>
+                <div>
+                    <h3 class="font-bold text-yellow-800 mb-1">Peringatan!</h3>
+                    <p class="text-sm text-yellow-700">
+                        Tindakan ini akan menghapus <strong>SEMUA</strong> flashcard yang tersimpan di browser Anda. 
+                        Data yang sudah dihapus <strong>tidak dapat dikembalikan</strong>.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-3 mb-6">
+            <button 
+                id="clear-all-btn"
+                class="w-full bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded-lg font-bold text-lg transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg">
+                🗑️ Hapus Semua Data
+            </button>
+
+            <button 
+                id="back-btn"
+                class="w-full bg-gray-500 hover:bg-gray-600 text-white px-6 py-4 rounded-lg font-semibold transition-all duration-200">
+                ← Kembali ke Aplikasi
+            </button>
+        </div>
+
+        <div id="status-message" class="hidden rounded-lg p-4 text-center font-semibold"></div>
+
+        <div class="mt-6 pt-6 border-t border-gray-200">
+            <h3 class="font-bold text-gray-900 mb-2">Kapan harus clear storage?</h3>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>✓ Setelah update aplikasi</li>
+                <li>✓ Jika data terlihat corrupt atau error</li>
+                <li>✓ Ingin mulai dari awal</li>
+                <li>✓ Menghapus data dummy lama</li>
+            </ul>
+        </div>
+    </div>
+
+    <script type="module">
+        import { storageManager } from './js/storage-manager.js';
+
+        const clearAllBtn = document.getElementById('clear-all-btn');
+        const backBtn = document.getElementById('back-btn');
+        const statusMessage = document.getElementById('status-message');
+
+        clearAllBtn.addEventListener('click', () => {
+            // Konfirmasi sekali lagi
+            const confirmed = confirm(
+                '⚠️ PERINGATAN TERAKHIR!\n\n' +
+                'Apakah Anda yakin ingin menghapus SEMUA data flashcard?\n\n' +
+                'Data yang dihapus TIDAK DAPAT dikembalikan!\n\n' +
+                'Klik OK untuk melanjutkan, atau Cancel untuk membatalkan.'
+            );
+
+            if (confirmed) {
+                try {
+                    // Clear all data
+                    storageManager.clearAll();
+                    
+                    // Show success message
+                    statusMessage.className = 'bg-green-100 border-2 border-green-500 text-green-800 rounded-lg p-4 text-center font-semibold';
+                    statusMessage.textContent = '✅ Semua data berhasil dihapus!';
+                    statusMessage.classList.remove('hidden');
+
+                    // Disable clear button
+                    clearAllBtn.disabled = true;
+                    clearAllBtn.className = 'w-full bg-gray-400 text-white px-6 py-4 rounded-lg font-bold text-lg cursor-not-allowed opacity-50';
+                    clearAllBtn.textContent = '✓ Data Sudah Dihapus';
+
+                    // Auto redirect after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } catch (error) {
+                    // Show error message
+                    statusMessage.className = 'bg-red-100 border-2 border-red-500 text-red-800 rounded-lg p-4 text-center font-semibold';
+                    statusMessage.textContent = '❌ Gagal menghapus data: ' + error.message;
+                    statusMessage.classList.remove('hidden');
+                }
+            }
+        });
+
+        backBtn.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
