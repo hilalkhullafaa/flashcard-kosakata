@@ -13,6 +13,7 @@ import { ViewContext, ViewContextType } from './flashcard-model.js';
 export class DisplayController {
     constructor() {
         this.currentFlashcards = [];
+        this.originalFlashcards = []; // Store original flashcards before filtering
         this.currentIndex = 0;
         this.currentContext = null;
     }
@@ -367,6 +368,7 @@ export class DisplayController {
      * @param {ViewContext} context - View context
      */
     setCurrentFlashcards(flashcards, context) {
+        this.originalFlashcards = flashcards; // Store original before any filtering
         this.currentFlashcards = flashcards;
         this.currentContext = context;
         this.currentIndex = 0;

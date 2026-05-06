@@ -951,6 +951,9 @@ class App {
         
         if (!modal || !overlay) return;
 
+        // Reset filter to ALL when opening flashcard view
+        filterEngine.clearFilter();
+
         displayController.setCurrentFlashcards(flashcards, context);
 
         modal.innerHTML = '';
@@ -1015,6 +1018,10 @@ class App {
             option.value = type;
             option.textContent = filterEngine.getFilterDisplayName(type);
             option.className = 'text-gray-900';
+            // Set selected based on current filter
+            if (type === filterEngine.getCurrentFilter()) {
+                option.selected = true;
+            }
             filterSelect.appendChild(option);
         });
 
@@ -1041,7 +1048,8 @@ class App {
      * Apply filter and shuffle
      */
     applyFilterAndShuffle(shuffle = false) {
-        let flashcards = displayController.currentFlashcards;
+        // Start with original flashcards (before any filtering)
+        let flashcards = displayController.originalFlashcards;
         
         // Apply filter
         flashcards = filterEngine.filterByScriptType(flashcards);
@@ -1051,7 +1059,9 @@ class App {
             flashcards = shuffleEngine.shuffle(flashcards);
         }
         
-        displayController.setCurrentFlashcards(flashcards, displayController.currentContext);
+        // Update current flashcards (don't update original)
+        displayController.currentFlashcards = flashcards;
+        displayController.currentIndex = 0;
         this.renderCurrentFlashcard();
     }
 
