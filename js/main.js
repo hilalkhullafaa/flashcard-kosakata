@@ -212,7 +212,7 @@ class App {
         titleEl.textContent = title;
 
         const statsEl = document.createElement('div');
-        statsEl.className = 'text-2xl font-bold text-blue-600 dark:text-blue-400 mb-3';
+        statsEl.className = 'text-2xl font-bold text-indigo-500 dark:text-indigo-300 mb-3';
         statsEl.textContent = stats.getDisplayText();
 
         card.appendChild(titleEl);
@@ -222,7 +222,7 @@ class App {
         if (stats.rememberedList && stats.rememberedList.length > 0) {
             // View details button
             const viewDetailsBtn = document.createElement('button');
-            viewDetailsBtn.className = 'inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 font-semibold cursor-pointer transition-all duration-200 hover:text-blue-700 dark:hover:text-blue-300 hover:translate-x-1 mt-2';
+            viewDetailsBtn.className = 'inline-flex items-center gap-2 text-sm text-indigo-500 dark:text-indigo-300 font-semibold cursor-pointer transition-all duration-200 hover:text-indigo-600 dark:hover:text-indigo-200 hover:translate-x-1 mt-2';
             viewDetailsBtn.innerHTML = '<span>Lihat Detail</span> <span class="inline-block text-xs">→</span>';
             
             // Click handler to open full view
