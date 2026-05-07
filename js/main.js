@@ -120,7 +120,7 @@ class App {
         searchInput.type = 'text';
         searchInput.id = 'search-input';
         searchInput.placeholder = 'Cari kosakata...';
-        searchInput.className = 'w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-base focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200';
+        searchInput.className = 'w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white text-base focus:border-blue-500 dark:focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-indigo-500 focus:ring-opacity-50 transition-all duration-200';
         
         searchInput.addEventListener('input', (e) => {
             // Clear previous timeout
@@ -145,7 +145,7 @@ class App {
      */
     createOverallProgress() {
         const container = document.createElement('div');
-        container.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6 transition-all duration-300 hover:shadow-md';
+        container.className = 'bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 mb-6 transition-all duration-300 hover:shadow-md';
 
         const title = document.createElement('h2');
         title.className = 'text-xl sm:text-2xl font-bold mb-4 text-gray-900 dark:text-white';
@@ -180,7 +180,7 @@ class App {
 
         // View all flashcards button
         const viewAllButton = document.createElement('button');
-        viewAllButton.className = 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
+        viewAllButton.className = 'bg-blue-500 hover:bg-blue-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
         viewAllButton.textContent = '📚 Lihat Semua';
         viewAllButton.addEventListener('click', () => this.showAllFlashcards());
 
@@ -205,7 +205,7 @@ class App {
      */
     createProgressCard(title, stats, context = null) {
         const card = document.createElement('div');
-        card.className = 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 rounded-lg p-4 border border-blue-200 dark:border-gray-600 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg';
+        card.className = 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-800 rounded-lg p-4 border border-blue-200 dark:border-slate-600 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg';
 
         const titleEl = document.createElement('h3');
         titleEl.className = 'text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300';
@@ -247,10 +247,10 @@ class App {
      */
     createSourceSection(source) {
         const section = document.createElement('div');
-        section.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-md';
+        section.className = 'bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden transition-all duration-300 hover:shadow-md';
 
         const header = document.createElement('div');
-        header.className = 'p-4 cursor-pointer flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200';
+        header.className = 'p-4 cursor-pointer flex justify-between items-center hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors duration-200';
 
         const titleContainer = document.createElement('div');
         titleContainer.className = 'flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-1';
@@ -265,7 +265,7 @@ class App {
         const chapters = flashcardManager.getChaptersForSource(source);
         
         const badge = document.createElement('span');
-        badge.className = 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap';
+        badge.className = 'bg-blue-100 dark:bg-slate-700 text-blue-800 dark:text-indigo-300 text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap';
         badge.textContent = `${chapters.length} bab`;
 
         titleAndBadge.appendChild(title);
@@ -341,7 +341,7 @@ class App {
             sourceButtons.className = 'flex flex-wrap gap-2';
 
             const viewAllButton = document.createElement('button');
-            viewAllButton.className = 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
+            viewAllButton.className = 'bg-blue-500 hover:bg-blue-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
             viewAllButton.textContent = '📚 Lihat Semua';
             viewAllButton.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -349,7 +349,7 @@ class App {
             });
 
             const manageButton = document.createElement('button');
-            manageButton.className = 'bg-gray-600 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-800 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
+            manageButton.className = 'bg-gray-600 hover:bg-gray-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200';
             manageButton.textContent = '⚙️ Kelola';
             manageButton.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -399,10 +399,10 @@ class App {
      */
     createChapterCard(source, chapter) {
         const card = document.createElement('div');
-        card.className = 'bg-white dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600 transition-all duration-300 cursor-pointer hover:translate-y-[-4px] hover:shadow-xl';
+        card.className = 'bg-white dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-slate-700 transition-all duration-300 cursor-pointer hover:translate-y-[-4px] hover:shadow-xl';
 
         const chapterNumber = document.createElement('div');
-        chapterNumber.className = 'text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1';
+        chapterNumber.className = 'text-2xl font-bold text-blue-600 dark:text-indigo-400 mb-1';
         chapterNumber.textContent = `Bab ${chapter}`;
 
         const flashcards = flashcardManager.getFlashcardsByChapter(source, chapter);
@@ -414,7 +414,7 @@ class App {
         buttonsContainer.className = 'flex flex-col gap-2';
 
         const viewButton = document.createElement('button');
-        viewButton.className = 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200';
+        viewButton.className = 'bg-blue-500 hover:bg-blue-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200';
         viewButton.textContent = '👁️ Lihat';
         viewButton.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -422,7 +422,7 @@ class App {
         });
 
         const manageButton = document.createElement('button');
-        manageButton.className = 'bg-gray-600 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-800 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200';
+        manageButton.className = 'bg-gray-600 hover:bg-gray-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200';
         manageButton.textContent = '⚙️ Kelola';
         manageButton.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -474,7 +474,7 @@ class App {
      */
     createFlashcardForm(flashcard = null) {
         const container = document.createElement('div');
-        container.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto';
+        container.className = 'bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto';
 
         const title = document.createElement('h2');
         title.className = 'text-2xl font-bold mb-6 text-gray-900 dark:text-white';
@@ -519,7 +519,7 @@ class App {
 
         const submitButton = document.createElement('button');
         submitButton.type = 'submit';
-        submitButton.className = 'flex-1 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200';
+        submitButton.className = 'flex-1 bg-blue-500 hover:bg-blue-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200';
         submitButton.textContent = flashcard ? 'Update' : 'Add';
 
         const cancelButton = document.createElement('button');
@@ -560,7 +560,7 @@ class App {
         input.name = name;
         input.value = value;
         input.required = required;
-        input.className = 'w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-colors duration-200';
+        input.className = 'w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:border-blue-500 dark:focus:border-indigo-500 focus:outline-none transition-colors duration-200';
 
         group.appendChild(labelEl);
         group.appendChild(input);
@@ -581,7 +581,7 @@ class App {
         const select = document.createElement('select');
         select.name = 'source';
         select.required = true;
-        select.className = 'w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-colors duration-200';
+        select.className = 'w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:border-blue-500 dark:focus:border-indigo-500 focus:outline-none transition-colors duration-200';
 
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
@@ -691,7 +691,7 @@ class App {
         modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
 
         const container = document.createElement('div');
-        container.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto';
+        container.className = 'bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto';
 
         // Header
         const header = document.createElement('div');
@@ -775,7 +775,7 @@ class App {
 
         // Edit button
         const editButton = document.createElement('button');
-        editButton.className = 'action-btn flex-1 sm:flex-none bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200';
+        editButton.className = 'action-btn flex-1 sm:flex-none bg-blue-500 hover:bg-blue-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200';
         editButton.textContent = '✏️ Edit';
         editButton.addEventListener('click', () => {
             this.closeModal();
@@ -899,11 +899,11 @@ class App {
         modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
 
         const container = document.createElement('div');
-        container.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col';
+        container.className = 'bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col';
 
         // Header
         const header = document.createElement('div');
-        header.className = 'p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center';
+        header.className = 'p-4 sm:p-6 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center';
 
         const headerTitle = document.createElement('h2');
         headerTitle.className = 'text-xl sm:text-2xl font-bold text-gray-900 dark:text-white';
@@ -919,8 +919,8 @@ class App {
 
         // Count info
         const countInfo = document.createElement('div');
-        countInfo.className = 'px-4 sm:px-6 py-3 bg-blue-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600';
-        countInfo.innerHTML = `<span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Total: <span class="text-blue-600 dark:text-blue-400">${rememberedList.length}</span> kosakata</span>`;
+        countInfo.className = 'px-4 sm:px-6 py-3 bg-blue-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600';
+        countInfo.innerHTML = `<span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Total: <span class="text-blue-600 dark:text-indigo-400">${rememberedList.length}</span> kosakata</span>`;
 
         // Content - scrollable list
         const content = document.createElement('div');
@@ -931,11 +931,11 @@ class App {
 
         rememberedList.forEach((item, index) => {
             const itemCard = document.createElement('div');
-            itemCard.className = 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 rounded-lg p-4 border border-blue-200 dark:border-gray-600 transition-all duration-200 hover:shadow-md';
+            itemCard.className = 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-800 rounded-lg p-4 border border-blue-200 dark:border-slate-600 transition-all duration-200 hover:shadow-md';
 
             // Number badge
             const numberBadge = document.createElement('div');
-            numberBadge.className = 'inline-block bg-blue-500 dark:bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full mb-2';
+            numberBadge.className = 'inline-block bg-blue-500 dark:bg-slate-700 text-white dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded-full mb-2';
             numberBadge.textContent = `#${index + 1}`;
 
             // Vocabulary row
@@ -972,7 +972,7 @@ class App {
             if (item.chapters && item.chapters.length > 0) {
                 const chaptersInfo = document.createElement('div');
                 chaptersInfo.className = 'text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2';
-                chaptersInfo.innerHTML = `<span class="font-medium">📖 Bab:</span> <span class="font-semibold text-blue-600 dark:text-blue-400">${item.chapters.join(', ')}</span>`;
+                chaptersInfo.innerHTML = `<span class="font-medium">📖 Bab:</span> <span class="font-semibold text-blue-600 dark:text-indigo-400">${item.chapters.join(', ')}</span>`;
                 itemCard.appendChild(numberBadge);
                 itemCard.appendChild(vocabRow);
                 itemCard.appendChild(chaptersInfo);
@@ -988,10 +988,10 @@ class App {
 
         // Footer with close button
         const footer = document.createElement('div');
-        footer.className = 'p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end';
+        footer.className = 'p-4 sm:p-6 border-t border-gray-200 dark:border-slate-700 flex justify-end';
 
         const closeFooterButton = document.createElement('button');
-        closeFooterButton.className = 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-200';
+        closeFooterButton.className = 'bg-blue-500 hover:bg-blue-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-200';
         closeFooterButton.textContent = 'Tutup';
         closeFooterButton.addEventListener('click', () => this.closeModal());
 
@@ -1026,7 +1026,7 @@ class App {
         modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-0 overflow-hidden';
 
         const container = document.createElement('div');
-        container.className = 'bg-gradient-to-br from-blue-600 to-purple-700 dark:from-gray-900 dark:to-gray-800 w-full h-full flex flex-col overflow-hidden';
+        container.className = 'bg-gradient-to-br from-blue-600 to-purple-700 dark:from-slate-900 dark:to-indigo-950 w-full h-full flex flex-col overflow-hidden';
 
         // Header with close button
         const header = document.createElement('div');
@@ -1278,10 +1278,10 @@ class App {
         modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-0 overflow-hidden';
 
         const container = document.createElement('div');
-        container.className = 'bg-white dark:bg-gray-800 w-full h-full sm:rounded-lg sm:shadow-xl sm:max-w-4xl sm:h-[90vh] flex flex-col overflow-hidden';
+        container.className = 'bg-white dark:bg-slate-800 w-full h-full sm:rounded-lg sm:shadow-xl sm:max-w-4xl sm:h-[90vh] flex flex-col overflow-hidden';
 
         const header = document.createElement('div');
-        header.className = 'flex justify-between items-center px-4 sm:px-6 py-4 sm:py-5 flex-shrink-0 border-b border-gray-200 dark:border-gray-700';
+        header.className = 'flex justify-between items-center px-4 sm:px-6 py-4 sm:py-5 flex-shrink-0 border-b border-gray-200 dark:border-slate-700';
 
         const titleEl = document.createElement('h2');
         titleEl.className = 'text-lg sm:text-2xl font-bold text-gray-900 dark:text-white';
@@ -1336,10 +1336,10 @@ class App {
         progressText.textContent = `Card ${info.current} of ${info.total}`;
         
         const progressBarBg = document.createElement('div');
-        progressBarBg.className = 'w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2 sm:h-3';
+        progressBarBg.className = 'w-full bg-gray-300 dark:bg-slate-700 rounded-full h-2 sm:h-3';
         
         const progressBarFill = document.createElement('div');
-        progressBarFill.className = 'bg-blue-500 dark:bg-blue-600 h-2 sm:h-3 rounded-full transition-all duration-300';
+        progressBarFill.className = 'bg-blue-500 dark:bg-indigo-600 h-2 sm:h-3 rounded-full transition-all duration-300';
         progressBarFill.style.width = `${(info.current / info.total) * 100}%`;
         
         progressBarBg.appendChild(progressBarFill);
@@ -1348,7 +1348,7 @@ class App {
 
         // Flashcard front (question)
         const questionCard = document.createElement('div');
-        questionCard.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-8 mb-3 sm:mb-6 min-h-[120px] sm:min-h-[200px] flex flex-col items-center justify-center';
+        questionCard.className = 'bg-white dark:bg-slate-800 rounded-lg shadow-lg p-4 sm:p-8 mb-3 sm:mb-6 min-h-[120px] sm:min-h-[200px] flex flex-col items-center justify-center border border-gray-200 dark:border-slate-700';
 
         const kanjiText = document.createElement('div');
         kanjiText.className = 'text-3xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4 text-center break-words leading-tight';
@@ -1385,7 +1385,7 @@ class App {
         answerInput.type = 'text';
         answerInput.id = 'guess-input';
         answerInput.placeholder = 'Type your answer...';
-        answerInput.className = 'w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base sm:text-lg focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-colors duration-200';
+        answerInput.className = 'w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white text-base sm:text-lg focus:border-blue-500 dark:focus:border-indigo-500 focus:outline-none transition-colors duration-200';
         
         const showAnswerButton = document.createElement('button');
         showAnswerButton.id = 'show-answer';
@@ -1394,7 +1394,7 @@ class App {
         
         const submitButton = document.createElement('button');
         submitButton.id = 'submit-guess';
-        submitButton.className = 'w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-200 transform hover:scale-105';
+        submitButton.className = 'w-full bg-blue-500 hover:bg-blue-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-200 transform hover:scale-105';
         submitButton.textContent = 'Submit';
 
         inputGroup.appendChild(answerInput);
@@ -1413,7 +1413,7 @@ class App {
         userAnswerDiv.className = 'bg-blue-50 dark:bg-blue-900 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-3 sm:p-4';
 
         const correctAnswerDiv = document.createElement('div');
-        correctAnswerDiv.className = 'bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 sm:p-6';
+        correctAnswerDiv.className = 'bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-slate-600 rounded-lg p-3 sm:p-6';
 
         const correctLabel = document.createElement('div');
         correctLabel.className = 'text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1 sm:mb-2';

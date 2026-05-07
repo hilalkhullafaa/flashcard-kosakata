@@ -99,7 +99,7 @@ export class DisplayController {
      */
     renderFront(flashcard, context) {
         const frontDiv = document.createElement('div');
-        frontDiv.className = 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl flex flex-col items-center justify-center border-4 border-blue-500 dark:border-blue-400 p-6 md:p-8 relative';
+        frontDiv.className = 'bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col items-center justify-center border-4 border-blue-500 dark:border-indigo-500 p-6 md:p-8 relative';
 
         // Checklist indicator for remembered flashcards
         if (flashcard.memoryStatus) {
@@ -153,7 +153,7 @@ export class DisplayController {
      */
     renderBack(flashcard, context, onMemoryStatusChange = null) {
         const backDiv = document.createElement('div');
-        backDiv.className = 'bg-gradient-to-br from-purple-600 to-blue-600 dark:from-purple-700 dark:to-blue-700 rounded-2xl shadow-2xl flex flex-col justify-between text-white p-6 md:p-8';
+        backDiv.className = 'bg-gradient-to-br from-purple-600 to-blue-600 dark:from-indigo-900 dark:to-slate-900 rounded-2xl shadow-2xl flex flex-col justify-between text-white p-6 md:p-8';
 
         // Top content
         const topContent = document.createElement('div');
