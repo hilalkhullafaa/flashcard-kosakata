@@ -71,7 +71,7 @@ class App {
             addButtonDesktop.addEventListener('click', () => this.showAddFlashcardForm());
         }
 
-        // Data menu toggle
+        // Data menu toggle (Desktop)
         const dataMenuBtn = document.getElementById('data-menu-btn');
         const dataMenu = document.getElementById('data-menu');
         const dataMenuArrow = document.getElementById('data-menu-arrow');
@@ -98,7 +98,25 @@ class App {
             });
         }
 
-        // Export button
+        // Data menu toggle (Mobile)
+        const dataMenuBtnMobile = document.getElementById('data-menu-btn-mobile');
+        const dataMenuMobile = document.getElementById('data-menu-mobile');
+        
+        if (dataMenuBtnMobile && dataMenuMobile) {
+            dataMenuBtnMobile.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dataMenuMobile.classList.toggle('hidden');
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!dataMenuBtnMobile.contains(e.target) && !dataMenuMobile.contains(e.target)) {
+                    dataMenuMobile.classList.add('hidden');
+                }
+            });
+        }
+
+        // Export button (Desktop)
         const exportBtn = document.getElementById('export-btn');
         if (exportBtn) {
             exportBtn.addEventListener('click', () => {
@@ -108,7 +126,16 @@ class App {
             });
         }
 
-        // Import button
+        // Export button (Mobile)
+        const exportBtnMobile = document.getElementById('export-btn-mobile');
+        if (exportBtnMobile) {
+            exportBtnMobile.addEventListener('click', () => {
+                if (dataMenuMobile) dataMenuMobile.classList.add('hidden');
+                this.handleExport();
+            });
+        }
+
+        // Import button (Desktop)
         const importBtn = document.getElementById('import-btn');
         const importFileInput = document.getElementById('import-file-input');
         
@@ -126,6 +153,16 @@ class App {
                 }
                 // Reset input so same file can be selected again
                 e.target.value = '';
+            });
+        }
+
+        // Import button (Mobile)
+        const importBtnMobile = document.getElementById('import-btn-mobile');
+        
+        if (importBtnMobile && importFileInput) {
+            importBtnMobile.addEventListener('click', () => {
+                if (dataMenuMobile) dataMenuMobile.classList.add('hidden');
+                importFileInput.click();
             });
         }
     }
