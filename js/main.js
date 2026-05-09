@@ -970,12 +970,26 @@ class App {
 
             // Chapters info
             if (item.chapters && item.chapters.length > 0) {
+                const metaInfo = document.createElement('div');
+                metaInfo.className = 'space-y-1';
+                
+                // Sources info
+                if (item.sources && item.sources.length > 0) {
+                    const sourcesInfo = document.createElement('div');
+                    sourcesInfo.className = 'text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2';
+                    sourcesInfo.innerHTML = `<span class="font-medium">📚 Sumber:</span> <span class="font-semibold text-gray-700 dark:text-gray-300">${item.sources.join(' | ')}</span>`;
+                    metaInfo.appendChild(sourcesInfo);
+                }
+                
+                // Chapters info
                 const chaptersInfo = document.createElement('div');
                 chaptersInfo.className = 'text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2';
                 chaptersInfo.innerHTML = `<span class="font-medium">📖 Bab:</span> <span class="font-semibold text-blue-600 dark:text-indigo-400">${item.chapters.join(', ')}</span>`;
+                metaInfo.appendChild(chaptersInfo);
+                
                 itemCard.appendChild(numberBadge);
                 itemCard.appendChild(vocabRow);
-                itemCard.appendChild(chaptersInfo);
+                itemCard.appendChild(metaInfo);
             } else {
                 itemCard.appendChild(numberBadge);
                 itemCard.appendChild(vocabRow);

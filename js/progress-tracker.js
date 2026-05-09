@@ -68,9 +68,11 @@ export class ProgressTracker {
     calculateProgress(flashcards, identifierField) {
         const uniqueVocab = new Set();
         const rememberedVocab = new Set();
-        const rememberedList = []; // Array of remembered flashcards
         const vocabChaptersMap = new Map(); // Map to track chapters for each vocabulary
+        const vocabSourcesMap = new Map(); // Map to track sources for each vocabulary
+        const vocabDataMap = new Map(); // Map to store flashcard data (meaning, kanji, hiragana)
 
+        // First pass: collect all data for each vocabulary
         for (const flashcard of flashcards) {
             const identifier = flashcard[identifierField];
 
@@ -88,22 +90,42 @@ export class ProgressTracker {
             // Add all chapters from this flashcard
             flashcard.chapters.forEach(ch => vocabChaptersMap.get(identifier).add(ch));
 
-            if (flashcard.memoryStatus === true) {
-                if (!rememberedVocab.has(identifier)) {
-                    rememberedVocab.add(identifier);
-                    
-                    // Get all chapters for this vocabulary
-                    const allChapters = Array.from(vocabChaptersMap.get(identifier)).sort((a, b) => a - b);
-                    
-                    rememberedList.push({
-                        identifier: identifier,
-                        meaning: flashcard.meaning,
-                        kanji: flashcard.kanji,
-                        hiragana: flashcard.hiragana,
-                        chapters: allChapters // Include all chapters
-                    });
-                }
+            // Track sources for this vocabulary
+            if (!vocabSourcesMap.has(identifier)) {
+                vocabSourcesMap.set(identifier, new Set());
             }
+            vocabSourcesMap.get(identifier).add(flashcard.source);
+
+            // Store flashcard data (use first occurrence)
+            if (!vocabDataMap.has(identifier)) {
+                vocabDataMap.set(identifier, {
+                    meaning: flashcard.meaning,
+                    kanji: flashcard.kanji,
+                    hiragana: flashcard.hiragana
+                });
+            }
+
+            // Track if this vocabulary is remembered
+            if (flashcard.memoryStatus === true) {
+                rememberedVocab.add(identifier);
+            }
+        }
+
+        // Second pass: build rememberedList with complete data
+        const rememberedList = [];
+        for (const identifier of rememberedVocab) {
+            const vocabData = vocabDataMap.get(identifier);
+            const allChapters = Array.from(vocabChaptersMap.get(identifier)).sort((a, b) => a - b);
+            const allSources = Array.from(vocabSourcesMap.get(identifier));
+            
+            rememberedList.push({
+                identifier: identifier,
+                meaning: vocabData.meaning,
+                kanji: vocabData.kanji,
+                hiragana: vocabData.hiragana,
+                chapters: allChapters, // Include all chapters
+                sources: allSources // Include all sources
+            });
         }
 
         const stats = new ProgressStats(uniqueVocab.size, rememberedVocab.size);
