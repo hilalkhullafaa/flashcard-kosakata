@@ -109,10 +109,10 @@ export class DisplayController {
             frontDiv.appendChild(checklistBadge);
         }
 
-        // Kanji display (if exists)
+        // Kanji display (if exists) - ONLY show kanji, no hiragana below
         if (flashcard.kanji && flashcard.kanji.trim() !== '') {
             const kanjiDiv = document.createElement('div');
-            kanjiDiv.className = 'text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4 md:mb-6 break-words leading-tight';
+            kanjiDiv.className = 'text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white break-words leading-tight';
             kanjiDiv.style.maxHeight = '6rem'; // Limit to ~2 lines
             kanjiDiv.style.overflow = 'hidden';
             kanjiDiv.style.display = '-webkit-box';
@@ -120,20 +120,18 @@ export class DisplayController {
             kanjiDiv.style.webkitBoxOrient = 'vertical';
             kanjiDiv.textContent = flashcard.kanji;
             frontDiv.appendChild(kanjiDiv);
+        } else {
+            // Hiragana/Katakana display (only if no kanji)
+            const hiraganaDiv = document.createElement('div');
+            hiraganaDiv.className = 'text-4xl sm:text-5xl md:text-6xl font-bold text-gray-700 dark:text-white break-words leading-tight';
+            hiraganaDiv.style.maxHeight = '6rem'; // Limit to ~2 lines
+            hiraganaDiv.style.overflow = 'hidden';
+            hiraganaDiv.style.display = '-webkit-box';
+            hiraganaDiv.style.webkitLineClamp = '2';
+            hiraganaDiv.style.webkitBoxOrient = 'vertical';
+            hiraganaDiv.textContent = flashcard.hiragana;
+            frontDiv.appendChild(hiraganaDiv);
         }
-
-        // Hiragana/Katakana display
-        const hiraganaDiv = document.createElement('div');
-        hiraganaDiv.className = flashcard.kanji 
-            ? 'text-2xl sm:text-3xl md:text-4xl font-medium text-gray-700 dark:text-white break-words leading-tight' 
-            : 'text-4xl sm:text-5xl md:text-6xl font-bold text-gray-700 dark:text-white break-words leading-tight';
-        hiraganaDiv.style.maxHeight = flashcard.kanji ? '4rem' : '6rem'; // Limit to ~2 lines
-        hiraganaDiv.style.overflow = 'hidden';
-        hiraganaDiv.style.display = '-webkit-box';
-        hiraganaDiv.style.webkitLineClamp = '2';
-        hiraganaDiv.style.webkitBoxOrient = 'vertical';
-        hiraganaDiv.textContent = flashcard.hiragana;
-        frontDiv.appendChild(hiraganaDiv);
 
         // Tap to flip hint
         const hintDiv = document.createElement('div');

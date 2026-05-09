@@ -890,6 +890,14 @@ class App {
      * Displays all remembered vocabulary in a full-screen list view
      */
     showRememberedVocabularyView(title, rememberedList, context = null) {
+        // Debug: Log the rememberedList to verify data structure
+        console.log('[showRememberedVocabularyView] Called with:', {
+            title,
+            listLength: rememberedList?.length,
+            context,
+            sampleItem: rememberedList?.[0]
+        });
+        
         const modal = document.getElementById('modal-container');
         const overlay = document.getElementById('modal-overlay');
         
@@ -973,12 +981,21 @@ class App {
                 const metaInfo = document.createElement('div');
                 metaInfo.className = 'space-y-1';
                 
+                // Debug log to verify item data
+                console.log(`[Display] Rendering vocabulary: ${item.identifier}`, {
+                    sources: item.sources,
+                    chapters: item.chapters,
+                    hasSources: !!(item.sources && item.sources.length > 0)
+                });
+                
                 // Sources info
                 if (item.sources && item.sources.length > 0) {
                     const sourcesInfo = document.createElement('div');
                     sourcesInfo.className = 'text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2';
                     sourcesInfo.innerHTML = `<span class="font-medium">📚 Sumber:</span> <span class="font-semibold text-gray-700 dark:text-gray-300">${item.sources.join(' | ')}</span>`;
                     metaInfo.appendChild(sourcesInfo);
+                } else {
+                    console.warn(`[Display] No sources found for vocabulary: ${item.identifier}`);
                 }
                 
                 // Chapters info
@@ -991,6 +1008,7 @@ class App {
                 itemCard.appendChild(vocabRow);
                 itemCard.appendChild(metaInfo);
             } else {
+                console.warn(`[Display] No chapters found for vocabulary: ${item.identifier}`);
                 itemCard.appendChild(numberBadge);
                 itemCard.appendChild(vocabRow);
             }

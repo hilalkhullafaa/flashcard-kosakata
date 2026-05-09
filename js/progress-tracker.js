@@ -115,8 +115,22 @@ export class ProgressTracker {
         const rememberedList = [];
         for (const identifier of rememberedVocab) {
             const vocabData = vocabDataMap.get(identifier);
-            const allChapters = Array.from(vocabChaptersMap.get(identifier)).sort((a, b) => a - b);
-            const allSources = Array.from(vocabSourcesMap.get(identifier));
+            
+            // Skip if no vocab data found (defensive check)
+            if (!vocabData) {
+                console.warn(`[Progress Tracker] No vocab data found for identifier: ${identifier}`);
+                continue;
+            }
+            
+            const allChapters = Array.from(vocabChaptersMap.get(identifier) || []).sort((a, b) => a - b);
+            const allSources = Array.from(vocabSourcesMap.get(identifier) || []);
+            
+            // Debug log to verify data collection
+            console.log(`[Progress Tracker] Vocabulary: ${identifier}`, {
+                chapters: allChapters,
+                sources: allSources,
+                meaning: vocabData?.meaning
+            });
             
             rememberedList.push({
                 identifier: identifier,
