@@ -25,6 +25,24 @@
                         <span class="text-xl">+</span>
                         <span>Tambah</span>
                     </button>
+                    <!-- Export/Import Dropdown (Desktop only) -->
+                    <div class="hidden sm:block relative">
+                        <button id="data-menu-btn" class="flex items-center gap-2 bg-gray-500 hover:bg-gray-600 dark:bg-slate-700 dark:hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-semibold text-base transition-all duration-200 shadow-sm hover:shadow-md">
+                            <span>💾</span>
+                            <span>Data</span>
+                            <span id="data-menu-arrow" class="text-sm transition-transform duration-200">▼</span>
+                        </button>
+                        <div id="data-menu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-gray-200 dark:border-slate-700 z-50">
+                            <button id="export-btn" class="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-900 dark:text-white font-medium transition-colors duration-200 rounded-t-lg flex items-center gap-2">
+                                <span>📤</span>
+                                <span>Export Data</span>
+                            </button>
+                            <button id="import-btn" class="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-900 dark:text-white font-medium transition-colors duration-200 rounded-b-lg flex items-center gap-2">
+                                <span>📥</span>
+                                <span>Import Data</span>
+                            </button>
+                        </div>
+                    </div>
                     <!-- Theme Toggle -->
                     <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 transition-all duration-200">
                         <span id="theme-icon" class="text-xl">🌙</span>
@@ -56,6 +74,9 @@
     <!-- Modal Container -->
     <div id="modal-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40"></div>
     <div id="modal-container" class="hidden"></div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="import-file-input" accept=".json" class="hidden" />
 
     <!-- Scripts -->
     <script type="module" src="js/main.js"></script>

@@ -349,6 +349,53 @@ export class FlashcardManager {
             });
         return Array.from(chapters).sort((a, b) => a - b);
     }
+
+    /**
+     * Export flashcards to JSON file
+     * @returns {Object} - Result object with success status
+     */
+    exportFlashcards() {
+        try {
+            storageManager.exportFlashcards();
+            return {
+                success: true,
+                message: 'Flashcards exported successfully!'
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.message || 'Failed to export flashcards'
+            };
+        }
+    }
+
+    /**
+     * Import flashcards from JSON file
+     * @param {File} file - JSON file containing flashcards
+     * @param {boolean} merge - If true, merge with existing data. If false, replace existing data.
+     * @returns {Promise<Object>} - Result object with success status and statistics
+     */
+    async importFlashcards(file, merge = false) {
+        try {
+            const result = await storageManager.importFlashcards(file, merge);
+            
+            // Reload flashcards from storage
+            this.loadFlashcards();
+            
+            return {
+                success: true,
+                ...result,
+                message: merge 
+                    ? `Successfully imported ${result.added} flashcards (${result.skipped} duplicates skipped)`
+                    : `Successfully imported ${result.added} flashcards`
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.message || 'Failed to import flashcards'
+            };
+        }
+    }
 }
 
 // Export singleton instance

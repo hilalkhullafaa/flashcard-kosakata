@@ -79,7 +79,7 @@ export class FilterEngine {
             case FilterType.HIRAGANA_ONLY:
                 return 'Hiragana Only';
             case FilterType.KANJI:
-                return 'With Kanji';
+                return 'Kanji Only';
             case FilterType.ALL:
             default:
                 return 'All';

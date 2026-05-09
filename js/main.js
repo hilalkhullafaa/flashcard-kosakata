@@ -70,6 +70,64 @@ class App {
         if (addButtonDesktop) {
             addButtonDesktop.addEventListener('click', () => this.showAddFlashcardForm());
         }
+
+        // Data menu toggle
+        const dataMenuBtn = document.getElementById('data-menu-btn');
+        const dataMenu = document.getElementById('data-menu');
+        const dataMenuArrow = document.getElementById('data-menu-arrow');
+        
+        if (dataMenuBtn && dataMenu) {
+            dataMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dataMenu.classList.toggle('hidden');
+                if (dataMenuArrow) {
+                    dataMenuArrow.style.transform = dataMenu.classList.contains('hidden') 
+                        ? 'rotate(0deg)' 
+                        : 'rotate(180deg)';
+                }
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!dataMenuBtn.contains(e.target) && !dataMenu.contains(e.target)) {
+                    dataMenu.classList.add('hidden');
+                    if (dataMenuArrow) {
+                        dataMenuArrow.style.transform = 'rotate(0deg)';
+                    }
+                }
+            });
+        }
+
+        // Export button
+        const exportBtn = document.getElementById('export-btn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                if (dataMenu) dataMenu.classList.add('hidden');
+                if (dataMenuArrow) dataMenuArrow.style.transform = 'rotate(0deg)';
+                this.handleExport();
+            });
+        }
+
+        // Import button
+        const importBtn = document.getElementById('import-btn');
+        const importFileInput = document.getElementById('import-file-input');
+        
+        if (importBtn && importFileInput) {
+            importBtn.addEventListener('click', () => {
+                if (dataMenu) dataMenu.classList.add('hidden');
+                if (dataMenuArrow) dataMenuArrow.style.transform = 'rotate(0deg)';
+                importFileInput.click();
+            });
+
+            importFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    this.handleImport(file);
+                }
+                // Reset input so same file can be selected again
+                e.target.value = '';
+            });
+        }
     }
 
     /**
@@ -1575,6 +1633,162 @@ class App {
 
         const results = searchEngine.search(query);
         this.showSearchResults(results, query);
+    }
+
+    /**
+     * Handle export flashcards
+     */
+    handleExport() {
+        const result = flashcardManager.exportFlashcards();
+        
+        if (result.success) {
+            this.showNotification('✅ ' + result.message, 'success');
+        } else {
+            this.showNotification('❌ ' + result.message, 'error');
+        }
+    }
+
+    /**
+     * Handle import flashcards
+     */
+    async handleImport(file) {
+        // Show import options modal
+        this.showImportOptionsModal(file);
+    }
+
+    /**
+     * Show import options modal
+     */
+    showImportOptionsModal(file) {
+        const modal = document.getElementById('modal-container');
+        const overlay = document.getElementById('modal-overlay');
+        
+        if (!modal || !overlay) return;
+
+        modal.innerHTML = '';
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
+
+        const container = document.createElement('div');
+        container.className = 'bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 max-w-md w-full';
+
+        const title = document.createElement('h2');
+        title.className = 'text-2xl font-bold mb-4 text-gray-900 dark:text-white';
+        title.textContent = '📥 Import Flashcards';
+
+        const description = document.createElement('p');
+        description.className = 'text-gray-700 dark:text-gray-300 mb-6';
+        description.textContent = 'Pilih mode import:';
+
+        const optionsContainer = document.createElement('div');
+        optionsContainer.className = 'space-y-3 mb-6';
+
+        // Replace option
+        const replaceOption = document.createElement('button');
+        replaceOption.className = 'w-full text-left p-4 border-2 border-gray-300 dark:border-slate-600 rounded-lg hover:border-blue-500 dark:hover:border-indigo-500 hover:bg-blue-50 dark:hover:bg-slate-700 transition-all duration-200';
+        replaceOption.innerHTML = `
+            <div class="font-bold text-gray-900 dark:text-white mb-1">🔄 Replace (Ganti Semua)</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">Hapus semua data lama dan ganti dengan data baru</div>
+        `;
+        replaceOption.addEventListener('click', () => {
+            this.closeModal();
+            this.performImport(file, false);
+        });
+
+        // Merge option
+        const mergeOption = document.createElement('button');
+        mergeOption.className = 'w-full text-left p-4 border-2 border-gray-300 dark:border-slate-600 rounded-lg hover:border-blue-500 dark:hover:border-indigo-500 hover:bg-blue-50 dark:hover:bg-slate-700 transition-all duration-200';
+        mergeOption.innerHTML = `
+            <div class="font-bold text-gray-900 dark:text-white mb-1">➕ Merge (Gabungkan)</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">Tambahkan data baru ke data yang sudah ada (skip duplikat)</div>
+        `;
+        mergeOption.addEventListener('click', () => {
+            this.closeModal();
+            this.performImport(file, true);
+        });
+
+        optionsContainer.appendChild(replaceOption);
+        optionsContainer.appendChild(mergeOption);
+
+        // Cancel button
+        const cancelButton = document.createElement('button');
+        cancelButton.className = 'w-full bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200';
+        cancelButton.textContent = 'Batal';
+        cancelButton.addEventListener('click', () => this.closeModal());
+
+        container.appendChild(title);
+        container.appendChild(description);
+        container.appendChild(optionsContainer);
+        container.appendChild(cancelButton);
+
+        modal.appendChild(container);
+
+        modal.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+
+        overlay.addEventListener('click', () => this.closeModal());
+    }
+
+    /**
+     * Perform import with selected mode
+     */
+    async performImport(file, merge) {
+        // Show loading notification
+        this.showNotification('⏳ Importing flashcards...', 'info');
+
+        try {
+            const result = await flashcardManager.importFlashcards(file, merge);
+            
+            if (result.success) {
+                this.showNotification('✅ ' + result.message, 'success');
+                // Refresh main view to show imported data
+                this.renderMainView();
+            } else {
+                this.showNotification('❌ ' + result.message, 'error');
+            }
+        } catch (error) {
+            this.showNotification('❌ Failed to import flashcards', 'error');
+        }
+    }
+
+    /**
+     * Show notification
+     */
+    showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `fixed top-20 right-4 z-50 px-6 py-4 rounded-lg shadow-xl font-semibold text-white transition-all duration-300 transform translate-x-0`;
+        
+        // Set color based on type
+        switch (type) {
+            case 'success':
+                notification.className += ' bg-green-500';
+                break;
+            case 'error':
+                notification.className += ' bg-red-500';
+                break;
+            case 'info':
+            default:
+                notification.className += ' bg-blue-500 dark:bg-indigo-600';
+                break;
+        }
+        
+        notification.textContent = message;
+        
+        // Add to body
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 10);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.style.transform = 'translateX(400px)';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
     }
 
     /**
