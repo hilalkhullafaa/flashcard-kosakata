@@ -1383,12 +1383,14 @@ class App {
         questionCard.className = 'bg-white dark:bg-slate-800 rounded-lg shadow-lg p-4 sm:p-8 mb-3 sm:mb-6 min-h-[120px] sm:min-h-[200px] flex flex-col items-center justify-center border border-gray-200 dark:border-slate-700';
 
         const kanjiText = document.createElement('div');
-        kanjiText.className = 'text-3xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4 text-center break-words leading-tight';
-        kanjiText.style.maxHeight = '4rem';
+        // Smaller font size for mobile to ensure all kanji characters are readable within 2 lines
+        kanjiText.className = 'text-xl sm:text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4 text-center break-words leading-snug';
+        kanjiText.style.maxHeight = '4.5rem';
         kanjiText.style.overflow = 'hidden';
         kanjiText.style.display = '-webkit-box';
         kanjiText.style.webkitLineClamp = '2';
         kanjiText.style.webkitBoxOrient = 'vertical';
+        kanjiText.style.wordBreak = 'break-word';
         kanjiText.textContent = flashcard.kanji || flashcard.hiragana;
 
         const hiraganaText = document.createElement('div');

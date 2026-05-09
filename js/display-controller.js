@@ -112,12 +112,14 @@ export class DisplayController {
         // Kanji display (if exists) - ONLY show kanji, no hiragana below
         if (flashcard.kanji && flashcard.kanji.trim() !== '') {
             const kanjiDiv = document.createElement('div');
-            kanjiDiv.className = 'text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white break-words leading-tight';
-            kanjiDiv.style.maxHeight = '6rem'; // Limit to ~2 lines
+            // Smaller font size for mobile to ensure all kanji characters are readable within 2 lines
+            kanjiDiv.className = 'text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white break-words leading-snug';
+            kanjiDiv.style.maxHeight = '4.5rem'; // Adjusted for 2 lines with smaller mobile font
             kanjiDiv.style.overflow = 'hidden';
             kanjiDiv.style.display = '-webkit-box';
             kanjiDiv.style.webkitLineClamp = '2';
             kanjiDiv.style.webkitBoxOrient = 'vertical';
+            kanjiDiv.style.wordBreak = 'break-word';
             kanjiDiv.textContent = flashcard.kanji;
             frontDiv.appendChild(kanjiDiv);
         } else {
