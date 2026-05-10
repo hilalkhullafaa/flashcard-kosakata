@@ -124,14 +124,17 @@ export class FlashcardManager {
      * @returns {Array<Object>} - Array of duplicate flashcards with source and chapters info
      */
     checkDuplicates(kanji, hiragana, excludeId = null) {
-        // Normalize kanji (treat empty string and null as the same)
-        const normalizedKanji = (kanji || '').trim();
+        // Normalize kanji and hiragana (treat empty string and null as the same, and take first part before "/")
+        const normalizedKanji = this.normalizeField(kanji);
+        const normalizedHiragana = this.normalizeField(hiragana);
         
         const duplicates = this.flashcards.filter(fc => {
-            const fcKanji = (fc.kanji || '').trim();
+            const fcKanji = this.normalizeField(fc.kanji);
+            const fcHiragana = this.normalizeField(fc.hiragana);
+            
             // Match if both kanji AND hiragana are the same
             return fcKanji === normalizedKanji && 
-                   fc.hiragana === hiragana && 
+                   fcHiragana === normalizedHiragana && 
                    fc.id !== excludeId;
         });
         
@@ -157,6 +160,30 @@ export class FlashcardManager {
             source: item.source,
             chapters: item.chapters.sort((a, b) => a - b)
         }));
+    }
+
+    /**
+     * Normalize field value for comparison
+     * Splits by "/" and sorts alphabetically to handle order variations
+     * Examples:
+     * - "お国/くに" → "お国|くに"
+     * - "くに/お国" → "お国|くに" (same result!)
+     * - "お国" → "お国"
+     * @param {string} value - Value to normalize
+     * @returns {string} - Normalized value
+     */
+    normalizeField(value) {
+        if (!value) return '';
+        const trimmed = value.trim();
+        
+        // If contains "/", split, trim each part, sort, and join with "|"
+        if (trimmed.includes('/')) {
+            const parts = trimmed.split('/').map(part => part.trim()).filter(part => part !== '');
+            // Sort alphabetically to ensure consistent order
+            return parts.sort().join('|');
+        }
+        
+        return trimmed;
     }
 
     /**

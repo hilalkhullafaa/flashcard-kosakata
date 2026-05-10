@@ -74,12 +74,15 @@ export class ProgressTracker {
 
         // First pass: collect all data for each vocabulary
         for (const flashcard of flashcards) {
-            const identifier = flashcard[identifierField];
+            let identifier = flashcard[identifierField];
 
             // Skip empty identifiers (e.g., empty Kanji field for Hiragana-only words)
             if (!identifier || identifier.trim() === '') {
                 continue;
             }
+
+            // Normalize identifier: take first part before "/" if exists
+            identifier = this.normalizeIdentifier(identifier);
 
             uniqueVocab.add(identifier);
 
@@ -148,6 +151,30 @@ export class ProgressTracker {
     }
 
     /**
+     * Normalize identifier for deduplication
+     * Splits by "/" and sorts alphabetically to handle order variations
+     * Examples:
+     * - "お国/くに" → "お国|くに"
+     * - "くに/お国" → "お国|くに" (same result!)
+     * - "お国" → "お国"
+     * @param {string} identifier - Identifier to normalize
+     * @returns {string} - Normalized identifier
+     */
+    normalizeIdentifier(identifier) {
+        if (!identifier) return '';
+        const trimmed = identifier.trim();
+        
+        // If contains "/", split, trim each part, sort, and join with "|"
+        if (trimmed.includes('/')) {
+            const parts = trimmed.split('/').map(part => part.trim()).filter(part => part !== '');
+            // Sort alphabetically to ensure consistent order
+            return parts.sort().join('|');
+        }
+        
+        return trimmed;
+    }
+
+    /**
      * Get unique vocabulary identifiers
      * @param {Array<Flashcard>} flashcards - Flashcards to analyze
      * @param {string} fieldName - Field to use as identifier ('hiragana' or 'kanji')
@@ -157,10 +184,12 @@ export class ProgressTracker {
         const identifiers = new Set();
 
         for (const flashcard of flashcards) {
-            const identifier = flashcard[fieldName];
+            let identifier = flashcard[fieldName];
 
             // Skip empty identifiers
             if (identifier && identifier.trim() !== '') {
+                // Normalize identifier: take first part before "/" if exists
+                identifier = this.normalizeIdentifier(identifier);
                 identifiers.add(identifier);
             }
         }
