@@ -167,9 +167,17 @@ export class DisplayController {
 
         // Romaji
         const romajiDiv = document.createElement('div');
-        romajiDiv.className = 'text-base sm:text-lg md:text-xl mb-4 md:mb-8 opacity-90 font-medium break-words leading-snug';
+        romajiDiv.className = 'text-base sm:text-lg md:text-xl mb-4 md:mb-6 opacity-90 font-medium break-words leading-snug';
         romajiDiv.textContent = flashcard.romaji;
         topContent.appendChild(romajiDiv);
+
+        // Hiragana/Katakana display (only for kanji flashcards)
+        if (flashcard.kanji && flashcard.kanji.trim() !== '') {
+            const hiraganaDisplayDiv = document.createElement('div');
+            hiraganaDisplayDiv.className = 'text-xl sm:text-2xl md:text-3xl mb-4 md:mb-6 opacity-90 font-bold break-words leading-snug';
+            hiraganaDisplayDiv.textContent = flashcard.hiragana;
+            topContent.appendChild(hiraganaDisplayDiv);
+        }
 
         // Info container
         const infoContainer = document.createElement('div');
