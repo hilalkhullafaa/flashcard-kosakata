@@ -6,6 +6,20 @@
 import { Flashcard, VALID_SOURCES } from './flashcard-model.js';
 import { storageManager, StorageError } from './storage-manager.js';
 
+// Debug mode - set to false to disable console logging
+const DEBUG_MODE = false;
+
+// Safe debug logging function
+function debugLog(...args) {
+    if (DEBUG_MODE) {
+        try {
+            console.log(...args);
+        } catch (e) {
+            // Silently fail if console is not available
+        }
+    }
+}
+
 /**
  * Validation Error class
  */
@@ -129,8 +143,8 @@ export class FlashcardManager {
         const normalizedHiragana = this.normalizeField(hiragana);
         
         // Debug logging
-        console.log('[Duplicate Check] Input:', { kanji, hiragana });
-        console.log('[Duplicate Check] Normalized:', { normalizedKanji, normalizedHiragana });
+        debugLog('[Duplicate Check] Input:', { kanji, hiragana });
+        debugLog('[Duplicate Check] Normalized:', { normalizedKanji, normalizedHiragana });
         
         const duplicates = this.flashcards.filter(fc => {
             const fcKanji = this.normalizeField(fc.kanji);
@@ -140,7 +154,7 @@ export class FlashcardManager {
             const isMatch = fcKanji === normalizedKanji && fcHiragana === normalizedHiragana && fc.id !== excludeId;
             
             if (isMatch) {
-                console.log('[Duplicate Check] MATCH FOUND:', {
+                debugLog('[Duplicate Check] MATCH FOUND:', {
                     existing: { kanji: fc.kanji, hiragana: fc.hiragana },
                     normalized: { fcKanji, fcHiragana }
                 });
@@ -150,7 +164,7 @@ export class FlashcardManager {
             return isMatch;
         });
         
-        console.log('[Duplicate Check] Total duplicates found:', duplicates.length);
+        debugLog('[Duplicate Check] Total duplicates found:', duplicates.length);
         
         // Group by source and collect chapters
         const groupedBySource = {};

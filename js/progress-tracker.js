@@ -6,6 +6,20 @@
 import { flashcardManager } from './flashcard-manager.js';
 import { ProgressStats, ViewContextType } from './flashcard-model.js';
 
+// Debug mode - set to false to disable console logging
+const DEBUG_MODE = false;
+
+// Safe debug logging function
+function debugLog(...args) {
+    if (DEBUG_MODE) {
+        try {
+            console.log(...args);
+        } catch (e) {
+            // Silently fail if console is not available
+        }
+    }
+}
+
 /**
  * Progress Tracker class
  * Calculates and tracks vocabulary learning progress
@@ -72,7 +86,7 @@ export class ProgressTracker {
         const vocabSourcesMap = new Map(); // Map to track sources for each vocabulary
         const vocabDataMap = new Map(); // Map to store flashcard data (meaning, kanji, hiragana)
 
-        console.log(`[Progress Tracker] Calculating progress for ${identifierField}, total flashcards: ${flashcards.length}`);
+        debugLog(`[Progress Tracker] Calculating progress for ${identifierField}, total flashcards: ${flashcards.length}`);
 
         // First pass: collect all data for each vocabulary
         for (const flashcard of flashcards) {
@@ -87,7 +101,7 @@ export class ProgressTracker {
             // Normalize identifier: handle "/" variations
             identifier = this.normalizeIdentifier(identifier);
             
-            console.log(`[Progress Tracker] ${identifierField}: "${originalIdentifier}" → normalized: "${identifier}"`);
+            debugLog(`[Progress Tracker] ${identifierField}: "${originalIdentifier}" → normalized: "${identifier}"`);
 
             uniqueVocab.add(identifier);
 
@@ -119,8 +133,8 @@ export class ProgressTracker {
             }
         }
 
-        console.log(`[Progress Tracker] Unique ${identifierField} vocabulary: ${uniqueVocab.size}`);
-        console.log(`[Progress Tracker] Remembered ${identifierField} vocabulary: ${rememberedVocab.size}`);
+        debugLog(`[Progress Tracker] Unique ${identifierField} vocabulary: ${uniqueVocab.size}`);
+        debugLog(`[Progress Tracker] Remembered ${identifierField} vocabulary: ${rememberedVocab.size}`);
 
         // Second pass: build rememberedList with complete data
         const rememberedList = [];
@@ -129,7 +143,7 @@ export class ProgressTracker {
             
             // Skip if no vocab data found (defensive check)
             if (!vocabData) {
-                console.warn(`[Progress Tracker] No vocab data found for identifier: ${identifier}`);
+                debugLog(`[Progress Tracker] No vocab data found for identifier: ${identifier}`);
                 continue;
             }
             
@@ -137,7 +151,7 @@ export class ProgressTracker {
             const allSources = Array.from(vocabSourcesMap.get(identifier) || []);
             
             // Debug log to verify data collection
-            console.log(`[Progress Tracker] Vocabulary: ${identifier}`, {
+            debugLog(`[Progress Tracker] Vocabulary: ${identifier}`, {
                 chapters: allChapters,
                 sources: allSources,
                 meaning: vocabData?.meaning
