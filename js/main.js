@@ -566,8 +566,11 @@ class App {
 
     /**
      * Create flashcard form
+     * @param {Object|null} flashcard - Flashcard to edit (null for new flashcard)
+     * @param {string|null} returnSource - Source to return to after save
+     * @param {number|null} returnChapter - Chapter to return to after save
      */
-    createFlashcardForm(flashcard = null) {
+    createFlashcardForm(flashcard = null, returnSource = null, returnChapter = null) {
         const container = document.createElement('div');
         container.className = 'bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto';
 
@@ -631,7 +634,7 @@ class App {
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            this.handleFormSubmit(form, flashcard);
+            this.handleFormSubmit(form, flashcard, returnSource, returnChapter);
         });
 
         container.appendChild(title);
@@ -701,8 +704,12 @@ class App {
 
     /**
      * Handle form submit
+     * @param {HTMLFormElement} form - Form element
+     * @param {Object|null} existingFlashcard - Existing flashcard (null for new)
+     * @param {string|null} returnSource - Source to return to after save
+     * @param {number|null} returnChapter - Chapter to return to after save
      */
-    handleFormSubmit(form, existingFlashcard = null) {
+    handleFormSubmit(form, existingFlashcard = null, returnSource = null, returnChapter = null) {
         const formData = new FormData(form);
         
         const data = {
@@ -723,7 +730,16 @@ class App {
 
         if (result.success) {
             this.closeModal();
-            this.renderMainView();
+            
+            // If we have return context (from manage view), return to manage view
+            if (returnSource !== null) {
+                setTimeout(() => {
+                    this.showManageFlashcards(returnSource, returnChapter);
+                }, 100);
+            } else {
+                // Otherwise, return to main view
+                this.renderMainView();
+            }
         } else {
             this.showFormErrors(result.errors);
         }
@@ -815,7 +831,7 @@ class App {
             listContainer.appendChild(emptyMessage);
         } else {
             flashcards.forEach(flashcard => {
-                const item = this.createFlashcardListItem(flashcard);
+                const item = this.createFlashcardListItem(flashcard, source, chapter);
                 listContainer.appendChild(item);
             });
         }
@@ -830,8 +846,11 @@ class App {
 
     /**
      * Create flashcard list item with edit/delete buttons
+     * @param {Object} flashcard - Flashcard to display
+     * @param {string|null} source - Source context (for returning to manage view)
+     * @param {number|null} chapter - Chapter context (for returning to manage view)
      */
-    createFlashcardListItem(flashcard) {
+    createFlashcardListItem(flashcard, source = null, chapter = null) {
         const item = document.createElement('div');
         item.className = 'flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 border border-gray-200 dark:border-gray-600 rounded-lg gap-3 transition-all duration-200 hover:bg-blue-50 hover:bg-opacity-50 dark:hover:bg-blue-900 dark:hover:bg-opacity-10';
 
@@ -874,7 +893,7 @@ class App {
         editButton.textContent = '✏️ Edit';
         editButton.addEventListener('click', () => {
             this.closeModal();
-            setTimeout(() => this.showEditFlashcardForm(flashcard), 100);
+            setTimeout(() => this.showEditFlashcardForm(flashcard, source, chapter), 100);
         });
 
         // Delete button
@@ -923,8 +942,11 @@ class App {
 
     /**
      * Show edit flashcard form
+     * @param {Object} flashcard - Flashcard to edit
+     * @param {string|null} returnSource - Source to return to after save (for manage view)
+     * @param {number|null} returnChapter - Chapter to return to after save (for manage view)
      */
-    showEditFlashcardForm(flashcard) {
+    showEditFlashcardForm(flashcard, returnSource = null, returnChapter = null) {
         const modal = document.getElementById('modal-container');
         const overlay = document.getElementById('modal-overlay');
         
@@ -933,7 +955,7 @@ class App {
         modal.innerHTML = '';
         modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
 
-        const form = this.createFlashcardForm(flashcard);
+        const form = this.createFlashcardForm(flashcard, returnSource, returnChapter);
         modal.appendChild(form);
 
         modal.classList.remove('hidden');
