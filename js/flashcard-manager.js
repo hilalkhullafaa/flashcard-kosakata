@@ -124,19 +124,33 @@ export class FlashcardManager {
      * @returns {Array<Object>} - Array of duplicate flashcards with source and chapters info
      */
     checkDuplicates(kanji, hiragana, excludeId = null) {
-        // Normalize kanji and hiragana (treat empty string and null as the same, and take first part before "/")
+        // Normalize kanji and hiragana (treat empty string and null as the same, and handle "/" variations)
         const normalizedKanji = this.normalizeField(kanji);
         const normalizedHiragana = this.normalizeField(hiragana);
+        
+        // Debug logging
+        console.log('[Duplicate Check] Input:', { kanji, hiragana });
+        console.log('[Duplicate Check] Normalized:', { normalizedKanji, normalizedHiragana });
         
         const duplicates = this.flashcards.filter(fc => {
             const fcKanji = this.normalizeField(fc.kanji);
             const fcHiragana = this.normalizeField(fc.hiragana);
             
+            // Debug logging for each flashcard comparison
+            const isMatch = fcKanji === normalizedKanji && fcHiragana === normalizedHiragana && fc.id !== excludeId;
+            
+            if (isMatch) {
+                console.log('[Duplicate Check] MATCH FOUND:', {
+                    existing: { kanji: fc.kanji, hiragana: fc.hiragana },
+                    normalized: { fcKanji, fcHiragana }
+                });
+            }
+            
             // Match if both kanji AND hiragana are the same
-            return fcKanji === normalizedKanji && 
-                   fcHiragana === normalizedHiragana && 
-                   fc.id !== excludeId;
+            return isMatch;
         });
+        
+        console.log('[Duplicate Check] Total duplicates found:', duplicates.length);
         
         // Group by source and collect chapters
         const groupedBySource = {};

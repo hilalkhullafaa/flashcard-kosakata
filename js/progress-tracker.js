@@ -72,6 +72,8 @@ export class ProgressTracker {
         const vocabSourcesMap = new Map(); // Map to track sources for each vocabulary
         const vocabDataMap = new Map(); // Map to store flashcard data (meaning, kanji, hiragana)
 
+        console.log(`[Progress Tracker] Calculating progress for ${identifierField}, total flashcards: ${flashcards.length}`);
+
         // First pass: collect all data for each vocabulary
         for (const flashcard of flashcards) {
             let identifier = flashcard[identifierField];
@@ -81,8 +83,11 @@ export class ProgressTracker {
                 continue;
             }
 
-            // Normalize identifier: take first part before "/" if exists
+            const originalIdentifier = identifier;
+            // Normalize identifier: handle "/" variations
             identifier = this.normalizeIdentifier(identifier);
+            
+            console.log(`[Progress Tracker] ${identifierField}: "${originalIdentifier}" → normalized: "${identifier}"`);
 
             uniqueVocab.add(identifier);
 
@@ -113,6 +118,9 @@ export class ProgressTracker {
                 rememberedVocab.add(identifier);
             }
         }
+
+        console.log(`[Progress Tracker] Unique ${identifierField} vocabulary: ${uniqueVocab.size}`);
+        console.log(`[Progress Tracker] Remembered ${identifierField} vocabulary: ${rememberedVocab.size}`);
 
         // Second pass: build rememberedList with complete data
         const rememberedList = [];
