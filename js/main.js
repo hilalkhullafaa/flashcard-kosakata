@@ -708,8 +708,9 @@ class App {
      * @param {Object|null} existingFlashcard - Existing flashcard (null for new)
      * @param {string|null} returnSource - Source to return to after save
      * @param {number|null} returnChapter - Chapter to return to after save
+     * @param {boolean} forceSave - Force save even if duplicate exists
      */
-    handleFormSubmit(form, existingFlashcard = null, returnSource = null, returnChapter = null) {
+    handleFormSubmit(form, existingFlashcard = null, returnSource = null, returnChapter = null, forceSave = false) {
         const formData = new FormData(form);
         
         const data = {
@@ -725,7 +726,7 @@ class App {
         if (existingFlashcard) {
             result = flashcardManager.updateFlashcard(existingFlashcard.id, data);
         } else {
-            result = flashcardManager.createFlashcard(data);
+            result = flashcardManager.createFlashcard(data, forceSave);
         }
 
         if (result.success) {
@@ -740,8 +741,170 @@ class App {
                 // Otherwise, return to main view
                 this.renderMainView();
             }
+        } else if (result.isDuplicate) {
+            // Show duplicate notification with save option
+            this.showDuplicateNotification(result.duplicates, data, () => {
+                // Callback to force save
+                this.handleFormSubmit(form, existingFlashcard, returnSource, returnChapter, true);
+            });
         } else {
             this.showFormErrors(result.errors);
+        }
+    }
+
+    /**
+     * Show duplicate notification with elegant design
+     * @param {Array<Object>} duplicates - Array of duplicate info (source, chapters)
+     * @param {Object} newData - New flashcard data being added
+     * @param {Function} onForceSave - Callback when user chooses to force save
+     */
+    showDuplicateNotification(duplicates, newData, onForceSave = null) {
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4 animate-fade-in';
+        overlay.style.animation = 'fadeIn 0.2s ease-out';
+
+        // Create notification card
+        const card = document.createElement('div');
+        card.className = 'bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-slide-up';
+        card.style.animation = 'slideUp 0.3s ease-out';
+
+        // Header with icon
+        const header = document.createElement('div');
+        header.className = 'bg-gradient-to-r from-yellow-500 to-orange-500 dark:from-yellow-600 dark:to-orange-600 p-6 flex items-center gap-4';
+
+        const icon = document.createElement('div');
+        icon.className = 'text-4xl';
+        icon.textContent = '⚠️';
+
+        const headerText = document.createElement('div');
+        headerText.className = 'flex-1';
+
+        const title = document.createElement('h3');
+        title.className = 'text-xl font-bold text-white mb-1';
+        title.textContent = 'Flashcard Sudah Ada';
+
+        const subtitle = document.createElement('p');
+        subtitle.className = 'text-sm text-white text-opacity-90';
+        subtitle.textContent = 'Kosakata ini sudah terdaftar';
+
+        headerText.appendChild(title);
+        headerText.appendChild(subtitle);
+        header.appendChild(icon);
+        header.appendChild(headerText);
+
+        // Body with duplicate info
+        const body = document.createElement('div');
+        body.className = 'p-6';
+
+        const infoText = document.createElement('p');
+        infoText.className = 'text-gray-700 dark:text-gray-300 mb-4';
+        
+        // Build the display text based on whether kanji exists
+        let displayText = 'Flashcard dengan ';
+        if (newData.kanji && newData.kanji.trim() !== '') {
+            displayText += `kanji <strong class="text-blue-600 dark:text-blue-400">${newData.kanji}</strong> dan hiragana/katakana <strong class="text-blue-600 dark:text-blue-400">${newData.hiragana}</strong>`;
+        } else {
+            displayText += `hiragana/katakana <strong class="text-blue-600 dark:text-blue-400">${newData.hiragana}</strong>`;
+        }
+        displayText += ' sudah ada di:';
+        
+        infoText.innerHTML = displayText;
+        body.appendChild(infoText);
+
+        // List of duplicates
+        const duplicateList = document.createElement('div');
+        duplicateList.className = 'space-y-3 mb-6';
+
+        duplicates.forEach(dup => {
+            const item = document.createElement('div');
+            item.className = 'bg-blue-50 dark:bg-slate-700 rounded-lg p-4 border-l-4 border-blue-500 dark:border-blue-400';
+
+            const sourceName = document.createElement('div');
+            sourceName.className = 'font-semibold text-gray-900 dark:text-white mb-2';
+            sourceName.textContent = `📚 ${dup.source}`;
+
+            const chapterInfo = document.createElement('div');
+            chapterInfo.className = 'text-sm text-gray-600 dark:text-gray-400';
+            chapterInfo.textContent = `📖 Bab: ${dup.chapters.join(', ')}`;
+
+            item.appendChild(sourceName);
+            item.appendChild(chapterInfo);
+            duplicateList.appendChild(item);
+        });
+
+        body.appendChild(duplicateList);
+
+        // Action buttons
+        const actions = document.createElement('div');
+        actions.className = 'flex gap-3';
+
+        const cancelButton = document.createElement('button');
+        cancelButton.className = 'flex-1 bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200';
+        cancelButton.textContent = 'Batal';
+        cancelButton.addEventListener('click', () => {
+            overlay.style.animation = 'fadeOut 0.2s ease-out';
+            setTimeout(() => overlay.remove(), 200);
+        });
+
+        const saveButton = document.createElement('button');
+        saveButton.className = 'flex-1 bg-blue-500 hover:bg-blue-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200';
+        saveButton.textContent = 'Tetap Simpan';
+        saveButton.addEventListener('click', () => {
+            overlay.style.animation = 'fadeOut 0.2s ease-out';
+            setTimeout(() => {
+                overlay.remove();
+                if (onForceSave) {
+                    onForceSave();
+                }
+            }, 200);
+        });
+
+        actions.appendChild(cancelButton);
+        actions.appendChild(saveButton);
+        body.appendChild(actions);
+
+        // Assemble card
+        card.appendChild(header);
+        card.appendChild(body);
+        overlay.appendChild(card);
+
+        // Add to document
+        document.body.appendChild(overlay);
+
+        // Close on overlay click
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.style.animation = 'fadeOut 0.2s ease-out';
+                setTimeout(() => overlay.remove(), 200);
+            }
+        });
+
+        // Add animations to document if not already present
+        if (!document.getElementById('duplicate-notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'duplicate-notification-styles';
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes fadeOut {
+                    from { opacity: 1; }
+                    to { opacity: 0; }
+                }
+                @keyframes slideUp {
+                    from { 
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to { 
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
         }
     }
 

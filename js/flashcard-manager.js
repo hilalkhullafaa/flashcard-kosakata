@@ -117,11 +117,55 @@ export class FlashcardManager {
     }
 
     /**
+     * Check for duplicate flashcards by Kanji AND Hiragana/Katakana combination
+     * @param {string} kanji - Kanji to check (can be empty)
+     * @param {string} hiragana - Hiragana/Katakana to check
+     * @param {string} excludeId - ID to exclude from check (for edit mode)
+     * @returns {Array<Object>} - Array of duplicate flashcards with source and chapters info
+     */
+    checkDuplicates(kanji, hiragana, excludeId = null) {
+        // Normalize kanji (treat empty string and null as the same)
+        const normalizedKanji = (kanji || '').trim();
+        
+        const duplicates = this.flashcards.filter(fc => {
+            const fcKanji = (fc.kanji || '').trim();
+            // Match if both kanji AND hiragana are the same
+            return fcKanji === normalizedKanji && 
+                   fc.hiragana === hiragana && 
+                   fc.id !== excludeId;
+        });
+        
+        // Group by source and collect chapters
+        const groupedBySource = {};
+        duplicates.forEach(fc => {
+            if (!groupedBySource[fc.source]) {
+                groupedBySource[fc.source] = {
+                    source: fc.source,
+                    chapters: []
+                };
+            }
+            // Add all chapters from this flashcard
+            fc.chapters.forEach(ch => {
+                if (!groupedBySource[fc.source].chapters.includes(ch)) {
+                    groupedBySource[fc.source].chapters.push(ch);
+                }
+            });
+        });
+        
+        // Convert to array and sort chapters
+        return Object.values(groupedBySource).map(item => ({
+            source: item.source,
+            chapters: item.chapters.sort((a, b) => a - b)
+        }));
+    }
+
+    /**
      * Create a new flashcard
      * @param {Object} data - Flashcard data
+     * @param {boolean} forceSave - Force save even if duplicate exists
      * @returns {Object} - Result object with success status and flashcard or errors
      */
-    createFlashcard(data) {
+    createFlashcard(data, forceSave = false) {
         // Validate data
         const errors = validateFlashcardData(data);
         if (errors.length > 0) {
@@ -129,6 +173,23 @@ export class FlashcardManager {
                 success: false,
                 errors: errors
             };
+        }
+
+        // Check for duplicates (skip if forceSave is true)
+        if (!forceSave) {
+            const duplicates = this.checkDuplicates(data.kanji, data.hiragana);
+            if (duplicates.length > 0) {
+                return {
+                    success: false,
+                    isDuplicate: true,
+                    duplicates: duplicates,
+                    flashcardData: {
+                        kanji: data.kanji,
+                        hiragana: data.hiragana
+                    },
+                    message: 'Flashcard dengan kanji dan hiragana/katakana ini sudah ada'
+                };
+            }
         }
 
         try {
