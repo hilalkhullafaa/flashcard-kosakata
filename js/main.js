@@ -1334,7 +1334,8 @@ class App {
                 setTimeout(() => {
                     this.nextFlashcard();
                 }, 250); // Wait a bit after animation
-            }
+            },
+            filterEngine.getCurrentFilter() // Pass current filter
         );
         
         container.appendChild(flashcardEl);

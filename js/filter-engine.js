@@ -77,7 +77,7 @@ export class FilterEngine {
     getFilterDisplayName(filterType) {
         switch (filterType) {
             case FilterType.HIRAGANA_ONLY:
-                return 'Hiragana Only';
+                return 'Hirakana Only';
             case FilterType.KANJI:
                 return 'Kanji Only';
             case FilterType.ALL:

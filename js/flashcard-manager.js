@@ -70,10 +70,41 @@ export class FlashcardManager {
         try {
             const data = storageManager.loadFlashcards();
             this.flashcards = data.map(item => Flashcard.fromJSON(item));
+            
+            // Sync memory status across flashcards with same hiragana
+            this.syncMemoryStatus();
         } catch (error) {
             console.error('Error loading flashcards:', error);
             this.flashcards = [];
         }
+    }
+
+    /**
+     * Sync memory status across all flashcards with the same Hiragana/Katakana
+     * Ensures that if any flashcard with a specific hiragana is remembered,
+     * all flashcards with that hiragana are marked as remembered
+     */
+    syncMemoryStatus() {
+        // Group flashcards by hiragana
+        const hiraganaGroups = new Map();
+        
+        this.flashcards.forEach(flashcard => {
+            if (!hiraganaGroups.has(flashcard.hiragana)) {
+                hiraganaGroups.set(flashcard.hiragana, []);
+            }
+            hiraganaGroups.get(flashcard.hiragana).push(flashcard);
+        });
+        
+        // For each group, if any flashcard is remembered, mark all as remembered
+        hiraganaGroups.forEach((group, hiragana) => {
+            const hasRemembered = group.some(fc => fc.memoryStatus === true);
+            
+            if (hasRemembered) {
+                group.forEach(fc => {
+                    fc.memoryStatus = true;
+                });
+            }
+        });
     }
 
     /**

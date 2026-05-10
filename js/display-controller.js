@@ -95,9 +95,10 @@ export class DisplayController {
      * Render flashcard front side
      * @param {Object} flashcard - Flashcard to render
      * @param {ViewContext} context - View context
+     * @param {string} currentFilter - Current filter type (optional)
      * @returns {HTMLElement} - Rendered front side element
      */
-    renderFront(flashcard, context) {
+    renderFront(flashcard, context, currentFilter = 'all') {
         const frontDiv = document.createElement('div');
         frontDiv.className = 'bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col items-center justify-center border-4 border-blue-500 dark:border-indigo-500 p-6 md:p-8 relative';
 
@@ -109,12 +110,12 @@ export class DisplayController {
             frontDiv.appendChild(checklistBadge);
         }
 
-        // Kanji display (if exists) - ONLY show kanji, no hiragana below
+        // Display logic based on filter and kanji availability
         if (flashcard.kanji && flashcard.kanji.trim() !== '') {
+            // Kanji display
             const kanjiDiv = document.createElement('div');
-            // Smaller font size for mobile to ensure all kanji characters are readable within 2 lines
             kanjiDiv.className = 'text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white break-words leading-snug';
-            kanjiDiv.style.maxHeight = '4.5rem'; // Adjusted for 2 lines with smaller mobile font
+            kanjiDiv.style.maxHeight = '4.5rem';
             kanjiDiv.style.overflow = 'hidden';
             kanjiDiv.style.display = '-webkit-box';
             kanjiDiv.style.webkitLineClamp = '2';
@@ -122,11 +123,19 @@ export class DisplayController {
             kanjiDiv.style.wordBreak = 'break-word';
             kanjiDiv.textContent = flashcard.kanji;
             frontDiv.appendChild(kanjiDiv);
+            
+            // Show hiragana below kanji ONLY when filter is "all"
+            if (currentFilter === 'all') {
+                const hiraganaSubDiv = document.createElement('div');
+                hiraganaSubDiv.className = 'text-lg sm:text-xl md:text-2xl font-medium text-blue-600 dark:text-blue-400 mt-2 break-words leading-snug';
+                hiraganaSubDiv.textContent = flashcard.hiragana;
+                frontDiv.appendChild(hiraganaSubDiv);
+            }
         } else {
             // Hiragana/Katakana display (only if no kanji)
             const hiraganaDiv = document.createElement('div');
             hiraganaDiv.className = 'text-4xl sm:text-5xl md:text-6xl font-bold text-gray-700 dark:text-white break-words leading-tight';
-            hiraganaDiv.style.maxHeight = '6rem'; // Limit to ~2 lines
+            hiraganaDiv.style.maxHeight = '6rem';
             hiraganaDiv.style.overflow = 'hidden';
             hiraganaDiv.style.display = '-webkit-box';
             hiraganaDiv.style.webkitLineClamp = '2';
@@ -332,9 +341,10 @@ export class DisplayController {
      * @param {Object} flashcard - Flashcard data
      * @param {ViewContext} context - View context
      * @param {Function} onMemoryStatusChange - Callback when memory status changes
+     * @param {string} currentFilter - Current filter type (optional)
      * @returns {HTMLElement} - Complete flashcard element
      */
-    createFlashcardElement(flashcard, context, onMemoryStatusChange = null) {
+    createFlashcardElement(flashcard, context, onMemoryStatusChange = null, currentFilter = 'all') {
         // Main container
         const container = document.createElement('div');
         container.className = 'w-full max-w-2xl mx-auto cursor-pointer';
@@ -351,8 +361,8 @@ export class DisplayController {
         inner.style.transition = 'transform 0.4s';
         inner.style.transformStyle = 'preserve-3d';
 
-        // Render front and back
-        const front = this.renderFront(flashcard, context);
+        // Render front and back with current filter
+        const front = this.renderFront(flashcard, context, currentFilter);
         const back = this.renderBack(flashcard, context, onMemoryStatusChange);
 
         // Add backface visibility styles
