@@ -159,13 +159,36 @@ export class StorageManager {
      */
     addCustomSource(source) {
         try {
+            // Import VALID_SOURCES to check against default sources
+            const VALID_SOURCES = [
+                'IRODORI Tingkat Pemula (A1)',
+                'IRODORI Tingkat Dasar 1 (A2)',
+                'IRODORI Tingkat Dasar 2 (A2)'
+            ];
+            
+            const trimmedSource = source.trim();
+            
+            // Don't add if it's empty
+            if (!trimmedSource) {
+                return false;
+            }
+            
+            // Don't add if it's already in VALID_SOURCES (case-insensitive)
+            const isDefaultSource = VALID_SOURCES.some(s => 
+                s.toLowerCase() === trimmedSource.toLowerCase()
+            );
+            
+            if (isDefaultSource) {
+                return false; // Don't add default sources to custom sources
+            }
+            
             const sources = this.loadCustomSources();
             
-            // Check if source already exists (case-insensitive)
-            const exists = sources.some(s => s.toLowerCase() === source.toLowerCase());
+            // Check if source already exists in custom sources (case-insensitive)
+            const exists = sources.some(s => s.toLowerCase() === trimmedSource.toLowerCase());
             
             if (!exists) {
-                sources.push(source);
+                sources.push(trimmedSource);
                 this.saveCustomSources(sources);
             }
             
@@ -215,6 +238,65 @@ export class StorageManager {
         } catch (error) {
             console.error('Error deleting custom source:', error);
             return false;
+        }
+    }
+
+    /**
+     * Clean up duplicate custom sources
+     * Removes duplicates and sources that match VALID_SOURCES
+     * @returns {Object} - Cleanup result with counts
+     */
+    cleanupCustomSources() {
+        try {
+            const VALID_SOURCES = [
+                'IRODORI Tingkat Pemula (A1)',
+                'IRODORI Tingkat Dasar 1 (A2)',
+                'IRODORI Tingkat Dasar 2 (A2)'
+            ];
+            
+            const sources = this.loadCustomSources();
+            const originalCount = sources.length;
+            
+            // Remove duplicates and default sources
+            const cleaned = [];
+            const seen = new Set();
+            
+            sources.forEach(source => {
+                const trimmed = source.trim();
+                const lowerCase = trimmed.toLowerCase();
+                
+                // Skip if empty
+                if (!trimmed) return;
+                
+                // Skip if it's a default source
+                const isDefaultSource = VALID_SOURCES.some(s => 
+                    s.toLowerCase() === lowerCase
+                );
+                if (isDefaultSource) return;
+                
+                // Skip if already seen (case-insensitive deduplication)
+                if (seen.has(lowerCase)) return;
+                
+                // Add to cleaned list
+                cleaned.push(trimmed);
+                seen.add(lowerCase);
+            });
+            
+            // Save cleaned list
+            this.saveCustomSources(cleaned);
+            
+            return {
+                success: true,
+                originalCount: originalCount,
+                cleanedCount: cleaned.length,
+                removedCount: originalCount - cleaned.length
+            };
+        } catch (error) {
+            console.error('Error cleaning up custom sources:', error);
+            return {
+                success: false,
+                error: error.message
+            };
         }
     }
 

@@ -37,6 +37,9 @@ class App {
         // Initialize theme
         themeController.initializeToggleButton();
         
+        // Clean up duplicate custom sources on startup
+        storageManager.cleanupCustomSources();
+        
         // Sync custom sources from existing flashcards to storage
         // This fixes orphaned custom sources from flashcards added before auto-save was implemented
         syncCustomSourcesFromFlashcards();
@@ -2190,6 +2193,9 @@ class App {
             const result = await flashcardManager.importFlashcards(file, merge);
             
             if (result.success) {
+                // Clean up duplicate custom sources after import
+                storageManager.cleanupCustomSources();
+                
                 this.showNotification('✅ ' + result.message, 'success');
                 // Refresh main view to show imported data
                 this.renderMainView();

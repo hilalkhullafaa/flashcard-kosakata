@@ -11,14 +11,16 @@ export const VALID_SOURCES = [
 ];
 
 /**
- * Get all available sources (default + custom)
- * @returns {Array<string>} - Array of all source names
+ * Get all available sources (default + custom) - with deduplication
+ * @returns {Array<string>} - Array of unique source names
  */
 export function getAllSources() {
     // Import storage manager dynamically to avoid circular dependency
     if (typeof window !== 'undefined' && window.storageManager) {
         const customSources = window.storageManager.loadCustomSources();
-        return [...VALID_SOURCES, ...customSources];
+        // Use Set to remove duplicates, then convert back to array
+        const allSources = new Set([...VALID_SOURCES, ...customSources]);
+        return Array.from(allSources).sort();
     }
     return VALID_SOURCES;
 }
@@ -47,6 +49,7 @@ export function getAllSourcesFromFlashcards() {
 /**
  * Sync custom sources from flashcards to storage
  * Detects orphaned custom sources and adds them to storage
+ * Avoids duplicating VALID_SOURCES
  */
 export function syncCustomSourcesFromFlashcards() {
     if (typeof window !== 'undefined' && window.storageManager && window.flashcardManager) {
@@ -54,13 +57,16 @@ export function syncCustomSourcesFromFlashcards() {
         const customSourcesFromStorage = window.storageManager.loadCustomSources();
         
         // Find sources that are in flashcards but not in VALID_SOURCES and not in custom storage
-        const orphanedSources = allSourcesFromFlashcards.filter(source => 
-            !VALID_SOURCES.includes(source) && !customSourcesFromStorage.includes(source)
-        );
+        const orphanedSources = allSourcesFromFlashcards.filter(source => {
+            const trimmedSource = source.trim();
+            // Exclude if it's in VALID_SOURCES or already in custom storage
+            return !VALID_SOURCES.includes(trimmedSource) && 
+                   !customSourcesFromStorage.includes(trimmedSource);
+        });
         
-        // Add orphaned sources to custom storage
+        // Add orphaned sources to custom storage (no duplicates)
         orphanedSources.forEach(source => {
-            window.storageManager.addCustomSource(source);
+            window.storageManager.addCustomSource(source.trim());
         });
         
         return orphanedSources.length > 0;
