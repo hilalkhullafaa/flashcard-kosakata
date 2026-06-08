@@ -5,10 +5,77 @@
 
 // Valid source constants
 export const VALID_SOURCES = [
-    'IRODORI Beginner Level (A1)',
-    'IRODORI Basic Level 1 (A1)',
-    'IRODORI Basic Level 1 (A2)'
+    'IRODORI Tingkat Pemula (A1)',
+    'IRODORI Tingkat Dasar 1 (A2)',
+    'IRODORI Tingkat Dasar 2 (A2)'
 ];
+
+/**
+ * Get all available sources (default + custom)
+ * @returns {Array<string>} - Array of all source names
+ */
+export function getAllSources() {
+    // Import storage manager dynamically to avoid circular dependency
+    if (typeof window !== 'undefined' && window.storageManager) {
+        const customSources = window.storageManager.loadCustomSources();
+        return [...VALID_SOURCES, ...customSources];
+    }
+    return VALID_SOURCES;
+}
+
+/**
+ * Get all sources from existing flashcards (including ones not in storage)
+ * This helps detect orphaned custom sources
+ * @returns {Array<string>} - Array of all source names found in flashcards
+ */
+export function getAllSourcesFromFlashcards() {
+    if (typeof window !== 'undefined' && window.flashcardManager) {
+        const flashcards = window.flashcardManager.getAllFlashcards();
+        const sourcesSet = new Set();
+        
+        flashcards.forEach(fc => {
+            if (fc.source && fc.source.trim() !== '') {
+                sourcesSet.add(fc.source);
+            }
+        });
+        
+        return Array.from(sourcesSet).sort();
+    }
+    return [];
+}
+
+/**
+ * Sync custom sources from flashcards to storage
+ * Detects orphaned custom sources and adds them to storage
+ */
+export function syncCustomSourcesFromFlashcards() {
+    if (typeof window !== 'undefined' && window.storageManager && window.flashcardManager) {
+        const allSourcesFromFlashcards = getAllSourcesFromFlashcards();
+        const customSourcesFromStorage = window.storageManager.loadCustomSources();
+        
+        // Find sources that are in flashcards but not in VALID_SOURCES and not in custom storage
+        const orphanedSources = allSourcesFromFlashcards.filter(source => 
+            !VALID_SOURCES.includes(source) && !customSourcesFromStorage.includes(source)
+        );
+        
+        // Add orphaned sources to custom storage
+        orphanedSources.forEach(source => {
+            window.storageManager.addCustomSource(source);
+        });
+        
+        return orphanedSources.length > 0;
+    }
+    return false;
+}
+
+/**
+ * Check if a source is a custom source (not in VALID_SOURCES)
+ * @param {string} source - Source name to check
+ * @returns {boolean} - True if custom source
+ */
+export function isCustomSource(source) {
+    return !VALID_SOURCES.includes(source);
+}
 
 /**
  * Flashcard class
@@ -131,7 +198,7 @@ export const FlashcardDataSchema = {
     hiragana: 'string (required)',
     meaning: 'string (required)',
     romaji: 'string (required)',
-    source: 'string (required, must be one of VALID_SOURCES)',
+    source: 'string (required, accepts any non-empty string including custom sources)',
     chapters: 'array of numbers (required, must not be empty)'
 };
 

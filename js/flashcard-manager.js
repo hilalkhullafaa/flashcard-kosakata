@@ -54,9 +54,9 @@ export function validateFlashcardData(data) {
         errors.push(new ValidationError('Romaji is required', 'romaji'));
     }
 
-    // Validate source (required and must be valid)
-    if (!data.source || !VALID_SOURCES.includes(data.source)) {
-        errors.push(new ValidationError('Valid source is required', 'source'));
+    // Validate source (required - now accepts any non-empty string)
+    if (!data.source || data.source.trim() === '') {
+        errors.push(new ValidationError('Source is required', 'source'));
     }
 
     // Validate chapters (required and must be non-empty array)

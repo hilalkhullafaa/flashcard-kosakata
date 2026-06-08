@@ -10,7 +10,12 @@ import { shuffleEngine } from './shuffle-engine.js';
 import { progressTracker } from './progress-tracker.js';
 import { searchEngine } from './search-engine.js';
 import { themeController } from './theme-controller.js';
-import { VALID_SOURCES, ViewContext, ViewContextType } from './flashcard-model.js';
+import { storageManager } from './storage-manager.js';
+import { VALID_SOURCES, getAllSources, isCustomSource, syncCustomSourcesFromFlashcards, ViewContext, ViewContextType } from './flashcard-model.js';
+
+// Make storageManager and flashcardManager available globally for helper functions
+window.storageManager = storageManager;
+window.flashcardManager = flashcardManager;
 
 /**
  * Application class
@@ -31,6 +36,10 @@ class App {
     init() {
         // Initialize theme
         themeController.initializeToggleButton();
+        
+        // Sync custom sources from existing flashcards to storage
+        // This fixes orphaned custom sources from flashcards added before auto-save was implemented
+        syncCustomSourcesFromFlashcards();
         
         // Load dummy data if no flashcards exist
         this.loadDummyDataIfNeeded();
@@ -165,6 +174,44 @@ class App {
                 importFileInput.click();
             });
         }
+
+        // Debug Storage button (Desktop)
+        const debugStorageBtn = document.getElementById('debug-storage-btn');
+        if (debugStorageBtn) {
+            debugStorageBtn.addEventListener('click', () => {
+                if (dataMenu) dataMenu.classList.add('hidden');
+                if (dataMenuArrow) dataMenuArrow.style.transform = 'rotate(0deg)';
+                this.showDebugStorage();
+            });
+        }
+
+        // Debug Storage button (Mobile)
+        const debugStorageBtnMobile = document.getElementById('debug-storage-btn-mobile');
+        if (debugStorageBtnMobile) {
+            debugStorageBtnMobile.addEventListener('click', () => {
+                if (dataMenuMobile) dataMenuMobile.classList.add('hidden');
+                this.showDebugStorage();
+            });
+        }
+
+        // Clear All button (Desktop)
+        const clearAllBtn = document.getElementById('clear-all-btn');
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener('click', () => {
+                if (dataMenu) dataMenu.classList.add('hidden');
+                if (dataMenuArrow) dataMenuArrow.style.transform = 'rotate(0deg)';
+                this.showClearAllDialog();
+            });
+        }
+
+        // Clear All button (Mobile)
+        const clearAllBtnMobile = document.getElementById('clear-all-btn-mobile');
+        if (clearAllBtnMobile) {
+            clearAllBtnMobile.addEventListener('click', () => {
+                if (dataMenuMobile) dataMenuMobile.classList.add('hidden');
+                this.showClearAllDialog();
+            });
+        }
     }
 
     /**
@@ -180,6 +227,9 @@ class App {
         // Force reload flashcards from storage to ensure we have latest data
         flashcardManager.loadFlashcards();
 
+        // Sync custom sources from flashcards to storage (in case of orphaned sources)
+        syncCustomSourcesFromFlashcards();
+
         // Header with add button and search
         const header = this.createHeader();
         mainView.appendChild(header);
@@ -192,7 +242,16 @@ class App {
         const sourcesContainer = document.createElement('div');
         sourcesContainer.className = 'space-y-6';
 
-        VALID_SOURCES.forEach(source => {
+        // Get all sources (default + custom)
+        const allSources = getAllSources();
+        
+        // Filter out sources that have no flashcards
+        const sourcesWithFlashcards = allSources.filter(source => {
+            const flashcards = flashcardManager.getFlashcardsBySource(source);
+            return flashcards.length > 0;
+        });
+
+        sourcesWithFlashcards.forEach(source => {
             const sourceSection = this.createSourceSection(source);
             sourcesContainer.appendChild(sourceSection);
         });
@@ -207,17 +266,88 @@ class App {
         const header = document.createElement('div');
         header.className = 'mb-6';
 
-        // Search input
+        // Search container with relative positioning for clear button
         const searchContainer = document.createElement('div');
-        searchContainer.className = 'w-full';
+        searchContainer.className = 'w-full relative flex items-center';
         
         const searchInput = document.createElement('input');
         searchInput.type = 'text';
         searchInput.id = 'search-input';
         searchInput.placeholder = 'Cari kosakata...';
-        searchInput.className = 'w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white text-base focus:border-blue-500 dark:focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-indigo-500 focus:ring-opacity-50 transition-all duration-200';
+        searchInput.className = 'w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white text-base focus:border-blue-500 dark:focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-indigo-500 focus:ring-opacity-50 transition-all duration-200';
         
+        // Clear button (X) - Always visible, simple approach
+        const clearButton = document.createElement('button');
+        clearButton.type = 'button';
+        clearButton.id = 'search-clear-btn';
+        clearButton.textContent = '×';
+        clearButton.title = 'Hapus pencarian';
+        clearButton.setAttribute('aria-label', 'Hapus pencarian');
+        
+        // Simple inline styles - no classes to avoid conflicts
+        clearButton.style.position = 'absolute';
+        clearButton.style.right = '12px';
+        clearButton.style.top = '50%';
+        clearButton.style.transform = 'translateY(-50%)';
+        clearButton.style.width = '32px';
+        clearButton.style.height = '32px';
+        clearButton.style.border = 'none';
+        clearButton.style.background = 'transparent';
+        clearButton.style.color = '#9ca3af'; // gray-400
+        clearButton.style.fontSize = '28px';
+        clearButton.style.lineHeight = '1';
+        clearButton.style.cursor = 'pointer';
+        clearButton.style.display = 'none'; // Initially hidden
+        clearButton.style.alignItems = 'center';
+        clearButton.style.justifyContent = 'center';
+        clearButton.style.zIndex = '20';
+        clearButton.style.borderRadius = '50%';
+        clearButton.style.transition = 'all 0.2s';
+        
+        // Hover effect via JS (since inline styles don't support :hover)
+        clearButton.addEventListener('mouseenter', () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            if (isDarkMode) {
+                clearButton.style.background = '#334155'; // slate-700
+                clearButton.style.color = '#e5e7eb'; // gray-200
+            } else {
+                clearButton.style.background = '#f3f4f6'; // gray-100
+                clearButton.style.color = '#4b5563'; // gray-600
+            }
+        });
+        
+        clearButton.addEventListener('mouseleave', () => {
+            clearButton.style.background = 'transparent';
+            clearButton.style.color = '#9ca3af'; // gray-400
+        });
+        
+        // Clear button click handler
+        clearButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            searchInput.value = '';
+            clearButton.style.display = 'none';
+            // Cancel any pending search timeout
+            if (this.searchTimeout) {
+                clearTimeout(this.searchTimeout);
+            }
+            this.handleSearch('');
+            // Focus the new search input after renderMainView replaces the DOM
+            setTimeout(() => {
+                const freshInput = document.getElementById('search-input');
+                if (freshInput) freshInput.focus();
+            }, 0);
+        });
+        
+        // Show/hide clear button based on input
         searchInput.addEventListener('input', (e) => {
+            // Show/hide clear button
+            if (e.target.value && e.target.value.trim().length > 0) {
+                clearButton.style.display = 'flex';
+            } else {
+                clearButton.style.display = 'none';
+            }
+            
             // Clear previous timeout
             if (this.searchTimeout) {
                 clearTimeout(this.searchTimeout);
@@ -228,8 +358,18 @@ class App {
                 this.handleSearch(e.target.value);
             }, 300);
         });
+        
+        // Also check on keyup for immediate response
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.target.value && e.target.value.trim().length > 0) {
+                clearButton.style.display = 'flex';
+            } else {
+                clearButton.style.display = 'none';
+            }
+        });
 
         searchContainer.appendChild(searchInput);
+        searchContainer.appendChild(clearButton);
         header.appendChild(searchContainer);
 
         return header;
@@ -351,7 +491,7 @@ class App {
         titleContainer.className = 'flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-1';
 
         const titleAndBadge = document.createElement('div');
-        titleAndBadge.className = 'flex items-center gap-2';
+        titleAndBadge.className = 'flex items-center gap-2 flex-wrap';
 
         const title = document.createElement('h2');
         title.className = 'text-base sm:text-lg font-bold text-gray-900 dark:text-white';
@@ -365,6 +505,40 @@ class App {
 
         titleAndBadge.appendChild(title);
         titleAndBadge.appendChild(badge);
+
+        // Add edit/delete buttons for ALL sources
+        const sourceActions = document.createElement('div');
+        sourceActions.className = 'flex items-center gap-1';
+
+        // For custom sources: allow rename
+        if (isCustomSource(source)) {
+            const editButton = document.createElement('button');
+            editButton.className = 'text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded transition-colors duration-200';
+            editButton.innerHTML = '✏️';
+            editButton.title = 'Edit nama source';
+            editButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.showEditSourceDialog(source);
+            });
+            sourceActions.appendChild(editButton);
+        }
+
+        // For ALL sources: allow delete flashcards
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 p-1 rounded transition-colors duration-200';
+        deleteButton.innerHTML = '🗑️';
+        deleteButton.title = isCustomSource(source) ? 'Hapus source dan flashcards' : 'Hapus semua flashcards dari source ini';
+        deleteButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isCustomSource(source)) {
+                this.showDeleteSourceDialog(source); // Delete source + flashcards
+            } else {
+                this.showDeleteFlashcardsFromSourceDialog(source); // Only delete flashcards
+            }
+        });
+        sourceActions.appendChild(deleteButton);
+
+        titleAndBadge.appendChild(sourceActions);
 
         // Get progress for this source
         const sourceContext = { type: ViewContextType.SOURCE, source: source };
@@ -667,7 +841,7 @@ class App {
     }
 
     /**
-     * Create source dropdown
+     * Create source dropdown with custom source option
      */
     createSourceDropdown(selectedValue = '') {
         const group = document.createElement('div');
@@ -677,8 +851,8 @@ class App {
         label.textContent = 'Source *';
 
         const select = document.createElement('select');
-        select.name = 'source';
-        select.required = true;
+        select.name = 'source-select';
+        select.id = 'source-select';
         select.className = 'w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:border-blue-500 dark:focus:border-indigo-500 focus:outline-none transition-colors duration-200';
 
         const defaultOption = document.createElement('option');
@@ -686,7 +860,13 @@ class App {
         defaultOption.textContent = 'Select a source...';
         select.appendChild(defaultOption);
 
-        VALID_SOURCES.forEach(source => {
+        // Get all sources (default + custom)
+        const allSources = getAllSources();
+        
+        // Check if selectedValue is custom
+        let isCustomSource = selectedValue && !allSources.includes(selectedValue);
+
+        allSources.forEach(source => {
             const option = document.createElement('option');
             option.value = source;
             option.textContent = source;
@@ -696,8 +876,56 @@ class App {
             select.appendChild(option);
         });
 
+        // Add "Custom..." option
+        const customOption = document.createElement('option');
+        customOption.value = '__custom__';
+        customOption.textContent = '➕ Tambah Source Baru...';
+        if (isCustomSource) {
+            customOption.selected = true;
+        }
+        select.appendChild(customOption);
+
         group.appendChild(label);
         group.appendChild(select);
+
+        // Custom source input field (initially hidden)
+        const customInputGroup = document.createElement('div');
+        customInputGroup.id = 'custom-source-group';
+        customInputGroup.className = isCustomSource ? 'mt-2' : 'mt-2 hidden';
+
+        const customLabel = document.createElement('label');
+        customLabel.className = 'block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300';
+        customLabel.textContent = 'Nama Source:';
+
+        const customInput = document.createElement('input');
+        customInput.type = 'text';
+        customInput.id = 'custom-source-input';
+        customInput.name = 'source';
+        customInput.placeholder = 'Masukkan nama source...';
+        customInput.value = isCustomSource ? selectedValue : '';
+        customInput.className = 'w-full px-4 py-2 rounded-lg border-2 border-blue-300 dark:border-indigo-500 bg-blue-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:border-blue-500 dark:focus:border-indigo-400 focus:outline-none transition-colors duration-200';
+
+        customInputGroup.appendChild(customLabel);
+        customInputGroup.appendChild(customInput);
+        group.appendChild(customInputGroup);
+
+        // Handle dropdown change
+        select.addEventListener('change', (e) => {
+            const customGroup = document.getElementById('custom-source-group');
+            const customInputField = document.getElementById('custom-source-input');
+            
+            if (e.target.value === '__custom__') {
+                // Show custom input
+                customGroup.classList.remove('hidden');
+                customInputField.required = true;
+                customInputField.focus();
+            } else {
+                // Hide custom input
+                customGroup.classList.add('hidden');
+                customInputField.required = false;
+                customInputField.value = '';
+            }
+        });
 
         return group;
     }
@@ -713,12 +941,30 @@ class App {
     handleFormSubmit(form, existingFlashcard = null, returnSource = null, returnChapter = null, forceSave = false) {
         const formData = new FormData(form);
         
+        // Get source value: either from custom input or from dropdown
+        const sourceSelect = form.querySelector('#source-select');
+        const customSourceInput = form.querySelector('#custom-source-input');
+        let sourceValue = '';
+        
+        if (sourceSelect && sourceSelect.value === '__custom__') {
+            // Use custom source input
+            sourceValue = customSourceInput ? customSourceInput.value.trim() : '';
+            
+            // Auto-save custom source to storage if it's new and not in VALID_SOURCES
+            if (sourceValue && !VALID_SOURCES.includes(sourceValue)) {
+                storageManager.addCustomSource(sourceValue);
+            }
+        } else {
+            // Use dropdown value
+            sourceValue = sourceSelect ? sourceSelect.value : formData.get('source');
+        }
+        
         const data = {
             kanji: formData.get('kanji'),
             hiragana: formData.get('hiragana'),
             meaning: formData.get('meaning'),
             romaji: formData.get('romaji'),
-            source: formData.get('source'),
+            source: sourceValue,
             chapters: formData.get('chapters').split(',').map(ch => parseInt(ch.trim())).filter(ch => !isNaN(ch))
         };
 
@@ -1170,14 +1416,6 @@ class App {
      * Displays all remembered vocabulary in a full-screen list view
      */
     showRememberedVocabularyView(title, rememberedList, context = null) {
-        // Debug: Log the rememberedList to verify data structure
-        console.log('[showRememberedVocabularyView] Called with:', {
-            title,
-            listLength: rememberedList?.length,
-            context,
-            sampleItem: rememberedList?.[0]
-        });
-        
         const modal = document.getElementById('modal-container');
         const overlay = document.getElementById('modal-overlay');
         
@@ -1261,21 +1499,12 @@ class App {
                 const metaInfo = document.createElement('div');
                 metaInfo.className = 'space-y-1';
                 
-                // Debug log to verify item data
-                console.log(`[Display] Rendering vocabulary: ${item.identifier}`, {
-                    sources: item.sources,
-                    chapters: item.chapters,
-                    hasSources: !!(item.sources && item.sources.length > 0)
-                });
-                
                 // Sources info
                 if (item.sources && item.sources.length > 0) {
                     const sourcesInfo = document.createElement('div');
                     sourcesInfo.className = 'text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2';
                     sourcesInfo.innerHTML = `<span class="font-medium">📚 Sumber:</span> <span class="font-semibold text-gray-700 dark:text-gray-300">${item.sources.join(' | ')}</span>`;
                     metaInfo.appendChild(sourcesInfo);
-                } else {
-                    console.warn(`[Display] No sources found for vocabulary: ${item.identifier}`);
                 }
                 
                 // Chapters info
@@ -1288,7 +1517,6 @@ class App {
                 itemCard.appendChild(vocabRow);
                 itemCard.appendChild(metaInfo);
             } else {
-                console.warn(`[Display] No chapters found for vocabulary: ${item.identifier}`);
                 itemCard.appendChild(numberBadge);
                 itemCard.appendChild(vocabRow);
             }
@@ -2033,8 +2261,13 @@ class App {
         
         // Restore search input value and cursor position
         const newSearchInput = document.getElementById('search-input');
+        const newClearBtn = document.getElementById('search-clear-btn');
         if (newSearchInput) {
             newSearchInput.value = query;
+            // Show clear button since there's a query value
+            if (newClearBtn) {
+                newClearBtn.style.display = query && query.trim().length > 0 ? 'flex' : 'none';
+            }
             // Restore cursor position after a short delay to ensure DOM is ready
             setTimeout(() => {
                 newSearchInput.setSelectionRange(cursorPosition, cursorPosition);
@@ -2099,6 +2332,356 @@ class App {
         card.appendChild(metaInfo);
 
         return card;
+    }
+
+    /**
+     * Show edit source dialog
+     * @param {string} oldSourceName - Current source name to edit
+     */
+    showEditSourceDialog(oldSourceName) {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm';
+
+        const dialog = document.createElement('div');
+        dialog.className = 'bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 max-w-md w-full';
+
+        const title = document.createElement('h3');
+        title.className = 'text-xl font-bold text-gray-900 dark:text-white mb-4';
+        title.textContent = '✏️ Edit Nama Source';
+
+        const label = document.createElement('label');
+        label.className = 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2';
+        label.textContent = 'Nama Source Baru:';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = oldSourceName;
+        input.className = 'w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:border-blue-500 dark:focus:border-indigo-500 focus:outline-none transition-colors duration-200 mb-4';
+        input.select();
+
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'flex gap-3';
+
+        const cancelButton = document.createElement('button');
+        cancelButton.className = 'flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200';
+        cancelButton.textContent = 'Batal';
+        cancelButton.addEventListener('click', () => modal.remove());
+
+        const saveButton = document.createElement('button');
+        saveButton.className = 'flex-1 bg-blue-500 hover:bg-blue-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200';
+        saveButton.textContent = 'Simpan';
+        saveButton.addEventListener('click', () => {
+            const newSourceName = input.value.trim();
+            
+            if (!newSourceName) {
+                this.showNotification('❌ Nama source tidak boleh kosong', 'error');
+                return;
+            }
+
+            if (newSourceName === oldSourceName) {
+                modal.remove();
+                return;
+            }
+
+            // Update custom source in storage
+            storageManager.updateCustomSource(oldSourceName, newSourceName);
+
+            // Update all flashcards with this source
+            const flashcards = flashcardManager.getFlashcardsBySource(oldSourceName);
+            flashcards.forEach(fc => {
+                flashcardManager.updateFlashcard(fc.id, {
+                    ...fc,
+                    source: newSourceName
+                });
+            });
+
+            modal.remove();
+            this.showNotification('✅ Nama source berhasil diubah', 'success');
+            this.renderMainView();
+        });
+
+        buttonsContainer.appendChild(cancelButton);
+        buttonsContainer.appendChild(saveButton);
+
+        dialog.appendChild(title);
+        dialog.appendChild(label);
+        dialog.appendChild(input);
+        dialog.appendChild(buttonsContainer);
+        modal.appendChild(dialog);
+        document.body.appendChild(modal);
+
+        // Focus input
+        input.focus();
+    }
+
+    /**
+     * Show delete source confirmation dialog
+     * @param {string} sourceName - Source name to delete
+     */
+    showDeleteSourceDialog(sourceName) {
+        const flashcards = flashcardManager.getFlashcardsBySource(sourceName);
+        const flashcardCount = flashcards.length;
+
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm';
+
+        const dialog = document.createElement('div');
+        dialog.className = 'bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 max-w-md w-full';
+
+        const title = document.createElement('h3');
+        title.className = 'text-xl font-bold text-red-600 dark:text-red-400 mb-4';
+        title.textContent = '⚠️ Hapus Source';
+
+        const message = document.createElement('p');
+        message.className = 'text-gray-700 dark:text-gray-300 mb-2';
+        message.textContent = `Apakah Anda yakin ingin menghapus source "${sourceName}"?`;
+
+        const warning = document.createElement('p');
+        warning.className = 'text-sm text-red-600 dark:text-red-400 font-semibold mb-4';
+        warning.textContent = `⚠️ ${flashcardCount} flashcard akan ikut terhapus!`;
+
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'flex gap-3';
+
+        const cancelButton = document.createElement('button');
+        cancelButton.className = 'flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200';
+        cancelButton.textContent = 'Batal';
+        cancelButton.addEventListener('click', () => modal.remove());
+
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200';
+        deleteButton.textContent = 'Hapus';
+        deleteButton.addEventListener('click', () => {
+            // Delete all flashcards with this source
+            flashcards.forEach(fc => {
+                flashcardManager.deleteFlashcard(fc.id);
+            });
+
+            // Delete custom source from storage
+            storageManager.deleteCustomSource(sourceName);
+
+            modal.remove();
+            this.showNotification('✅ Source berhasil dihapus', 'success');
+            this.renderMainView();
+        });
+
+        buttonsContainer.appendChild(cancelButton);
+        buttonsContainer.appendChild(deleteButton);
+
+        dialog.appendChild(title);
+        dialog.appendChild(message);
+        dialog.appendChild(warning);
+        dialog.appendChild(buttonsContainer);
+        modal.appendChild(dialog);
+        document.body.appendChild(modal);
+    }
+
+    /**
+     * Show delete flashcards from source confirmation dialog (for default sources)
+     * @param {string} sourceName - Source name
+     */
+    showDeleteFlashcardsFromSourceDialog(sourceName) {
+        const flashcards = flashcardManager.getFlashcardsBySource(sourceName);
+        const flashcardCount = flashcards.length;
+
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm';
+
+        const dialog = document.createElement('div');
+        dialog.className = 'bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 max-w-md w-full';
+
+        const title = document.createElement('h3');
+        title.className = 'text-xl font-bold text-red-600 dark:text-red-400 mb-4';
+        title.textContent = '⚠️ Hapus Flashcards';
+
+        const message = document.createElement('p');
+        message.className = 'text-gray-700 dark:text-gray-300 mb-2';
+        message.innerHTML = `Apakah Anda yakin ingin menghapus <strong>semua flashcard</strong> dari source "${sourceName}"?`;
+
+        const info = document.createElement('p');
+        info.className = 'text-sm text-blue-600 dark:text-blue-400 mb-2';
+        info.textContent = `ℹ️ Source "${sourceName}" tidak akan dihapus, hanya flashcard-nya.`;
+
+        const warning = document.createElement('p');
+        warning.className = 'text-sm text-red-600 dark:text-red-400 font-semibold mb-4';
+        warning.textContent = `⚠️ ${flashcardCount} flashcard akan dihapus!`;
+
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'flex gap-3';
+
+        const cancelButton = document.createElement('button');
+        cancelButton.className = 'flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200';
+        cancelButton.textContent = 'Batal';
+        cancelButton.addEventListener('click', () => modal.remove());
+
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200';
+        deleteButton.textContent = 'Hapus Flashcards';
+        deleteButton.addEventListener('click', () => {
+            // Delete all flashcards with this source
+            flashcards.forEach(fc => {
+                flashcardManager.deleteFlashcard(fc.id);
+            });
+
+            modal.remove();
+            this.showNotification(`✅ ${flashcardCount} flashcard dari "${sourceName}" berhasil dihapus`, 'success');
+            this.renderMainView();
+        });
+
+        buttonsContainer.appendChild(cancelButton);
+        buttonsContainer.appendChild(deleteButton);
+
+        dialog.appendChild(title);
+        dialog.appendChild(message);
+        dialog.appendChild(info);
+        dialog.appendChild(warning);
+        dialog.appendChild(buttonsContainer);
+        modal.appendChild(dialog);
+        document.body.appendChild(modal);
+    }
+
+    /**
+     * Show debug storage information
+     */
+    showDebugStorage() {
+        const info = storageManager.getStorageInfo();
+
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto';
+
+        const dialog = document.createElement('div');
+        dialog.className = 'bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 max-w-2xl w-full my-8';
+
+        const title = document.createElement('h3');
+        title.className = 'text-xl font-bold text-gray-900 dark:text-white mb-4';
+        title.textContent = '🔍 Debug Storage Information';
+
+        const content = document.createElement('div');
+        content.className = 'space-y-4 max-h-[60vh] overflow-y-auto';
+
+        // Flashcards info
+        const flashcardsSection = document.createElement('div');
+        flashcardsSection.className = 'bg-blue-50 dark:bg-slate-700 rounded-lg p-4';
+        flashcardsSection.innerHTML = `
+            <h4 class="font-bold text-gray-900 dark:text-white mb-2">📚 Flashcards</h4>
+            <p class="text-sm text-gray-700 dark:text-gray-300">Count: <strong>${info.flashcardsCount}</strong></p>
+            <details class="mt-2">
+                <summary class="text-sm text-blue-600 dark:text-blue-400 cursor-pointer hover:underline">Show Raw Data</summary>
+                <pre class="text-xs mt-2 p-2 bg-white dark:bg-slate-800 rounded overflow-x-auto">${JSON.stringify(info.flashcards, null, 2)}</pre>
+            </details>
+        `;
+
+        // Custom sources info
+        const sourcesSection = document.createElement('div');
+        sourcesSection.className = 'bg-green-50 dark:bg-slate-700 rounded-lg p-4';
+        sourcesSection.innerHTML = `
+            <h4 class="font-bold text-gray-900 dark:text-white mb-2">📖 Custom Sources</h4>
+            <p class="text-sm text-gray-700 dark:text-gray-300">Count: <strong>${info.customSourcesCount}</strong></p>
+            <p class="text-sm text-gray-700 dark:text-gray-300 mt-1">Sources: <strong>${info.customSources.join(', ') || 'None'}</strong></p>
+            <details class="mt-2">
+                <summary class="text-sm text-green-600 dark:text-green-400 cursor-pointer hover:underline">Show Raw Data</summary>
+                <pre class="text-xs mt-2 p-2 bg-white dark:bg-slate-800 rounded overflow-x-auto">${JSON.stringify(info.customSources, null, 2)}</pre>
+            </details>
+        `;
+
+        // Theme info
+        const themeSection = document.createElement('div');
+        themeSection.className = 'bg-purple-50 dark:bg-slate-700 rounded-lg p-4';
+        themeSection.innerHTML = `
+            <h4 class="font-bold text-gray-900 dark:text-white mb-2">🎨 Theme</h4>
+            <p class="text-sm text-gray-700 dark:text-gray-300">Current: <strong>${info.theme}</strong></p>
+        `;
+
+        content.appendChild(flashcardsSection);
+        content.appendChild(sourcesSection);
+        content.appendChild(themeSection);
+
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'flex gap-3 mt-6';
+
+        const copyButton = document.createElement('button');
+        copyButton.className = 'flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200';
+        copyButton.textContent = '📋 Copy to Clipboard';
+        copyButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(JSON.stringify(info, null, 2));
+            this.showNotification('✅ Debug info copied to clipboard', 'success');
+        });
+
+        const closeButton = document.createElement('button');
+        closeButton.className = 'flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200';
+        closeButton.textContent = 'Close';
+        closeButton.addEventListener('click', () => modal.remove());
+
+        buttonsContainer.appendChild(copyButton);
+        buttonsContainer.appendChild(closeButton);
+
+        dialog.appendChild(title);
+        dialog.appendChild(content);
+        dialog.appendChild(buttonsContainer);
+        modal.appendChild(dialog);
+        document.body.appendChild(modal);
+    }
+
+    /**
+     * Show clear all data confirmation dialog
+     */
+    showClearAllDialog() {
+        const info = storageManager.getStorageInfo();
+
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm';
+
+        const dialog = document.createElement('div');
+        dialog.className = 'bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 max-w-md w-full';
+
+        const title = document.createElement('h3');
+        title.className = 'text-2xl font-bold text-red-600 dark:text-red-400 mb-4 flex items-center gap-2';
+        title.innerHTML = '<span class="text-3xl">⚠️</span> <span>Clear All Data</span>';
+
+        const message = document.createElement('div');
+        message.className = 'bg-red-50 dark:bg-red-900/20 border-2 border-red-300 dark:border-red-700 rounded-lg p-4 mb-4';
+        message.innerHTML = `
+            <p class="text-gray-900 dark:text-white font-semibold mb-2">Apakah Anda yakin ingin menghapus SEMUA data?</p>
+            <div class="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                <p>• <strong>${info.flashcardsCount}</strong> flashcard akan dihapus</p>
+                <p>• <strong>${info.customSourcesCount}</strong> custom source akan dihapus</p>
+                <p>• Theme preference akan direset</p>
+            </div>
+            <p class="text-red-600 dark:text-red-400 font-bold mt-3">⚠️ Data yang dihapus TIDAK DAPAT dikembalikan!</p>
+        `;
+
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'flex gap-3';
+
+        const cancelButton = document.createElement('button');
+        cancelButton.className = 'flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-3 rounded-lg font-semibold transition-colors duration-200';
+        cancelButton.textContent = 'Batal';
+        cancelButton.addEventListener('click', () => modal.remove());
+
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-bold transition-colors duration-200';
+        deleteButton.textContent = '🗑️ Hapus Semua';
+        deleteButton.addEventListener('click', () => {
+            // Force clear all data
+            storageManager.forceClearAll();
+            
+            modal.remove();
+            this.showNotification('✅ Semua data berhasil dihapus!', 'success');
+            
+            // Reload page after short delay
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        });
+
+        buttonsContainer.appendChild(cancelButton);
+        buttonsContainer.appendChild(deleteButton);
+
+        dialog.appendChild(title);
+        dialog.appendChild(message);
+        dialog.appendChild(buttonsContainer);
+        modal.appendChild(dialog);
+        document.body.appendChild(modal);
     }
 }
 

@@ -6,7 +6,8 @@
 // Storage keys constants
 export const STORAGE_KEYS = {
     FLASHCARDS: 'japanese-flashcards',
-    THEME: 'japanese-flashcards-theme'
+    THEME: 'japanese-flashcards-theme',
+    CUSTOM_SOURCES: 'japanese-flashcards-custom-sources'
 };
 
 /**
@@ -108,6 +109,116 @@ export class StorageManager {
     }
 
     /**
+     * Save custom sources to localStorage
+     * @param {Array<string>} sources - Array of custom source names
+     * @returns {boolean} - Success status
+     */
+    saveCustomSources(sources) {
+        try {
+            const serialized = JSON.stringify(sources);
+            localStorage.setItem(STORAGE_KEYS.CUSTOM_SOURCES, serialized);
+            return true;
+        } catch (error) {
+            console.error('Error saving custom sources:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Load custom sources from localStorage
+     * @returns {Array<string>} - Array of custom source names (empty array if none exist)
+     */
+    loadCustomSources() {
+        try {
+            const serialized = localStorage.getItem(STORAGE_KEYS.CUSTOM_SOURCES);
+            
+            if (!serialized) {
+                return [];
+            }
+            
+            const sources = JSON.parse(serialized);
+            
+            // Validate that the loaded data is an array
+            if (!Array.isArray(sources)) {
+                console.warn('Corrupted custom sources data detected. Returning empty array.');
+                return [];
+            }
+            
+            return sources;
+        } catch (error) {
+            console.error('Error loading custom sources:', error);
+            console.warn('Corrupted custom sources data detected. Returning empty array.');
+            return [];
+        }
+    }
+
+    /**
+     * Add a custom source
+     * @param {string} source - Source name to add
+     * @returns {boolean} - Success status
+     */
+    addCustomSource(source) {
+        try {
+            const sources = this.loadCustomSources();
+            
+            // Check if source already exists (case-insensitive)
+            const exists = sources.some(s => s.toLowerCase() === source.toLowerCase());
+            
+            if (!exists) {
+                sources.push(source);
+                this.saveCustomSources(sources);
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Error adding custom source:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Update a custom source name
+     * @param {string} oldName - Old source name
+     * @param {string} newName - New source name
+     * @returns {boolean} - Success status
+     */
+    updateCustomSource(oldName, newName) {
+        try {
+            const sources = this.loadCustomSources();
+            const index = sources.findIndex(s => s === oldName);
+            
+            if (index !== -1) {
+                sources[index] = newName;
+                this.saveCustomSources(sources);
+                return true;
+            }
+            
+            return false;
+        } catch (error) {
+            console.error('Error updating custom source:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Delete a custom source
+     * @param {string} source - Source name to delete
+     * @returns {boolean} - Success status
+     */
+    deleteCustomSource(source) {
+        try {
+            const sources = this.loadCustomSources();
+            const filtered = sources.filter(s => s !== source);
+            
+            this.saveCustomSources(filtered);
+            return true;
+        } catch (error) {
+            console.error('Error deleting custom source:', error);
+            return false;
+        }
+    }
+
+    /**
      * Clear all data from localStorage
      * @returns {boolean} - Success status
      */
@@ -115,9 +226,61 @@ export class StorageManager {
         try {
             localStorage.removeItem(STORAGE_KEYS.FLASHCARDS);
             localStorage.removeItem(STORAGE_KEYS.THEME);
+            localStorage.removeItem(STORAGE_KEYS.CUSTOM_SOURCES);
             return true;
         } catch (error) {
             console.error('Error clearing storage:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Get storage info for debugging
+     * @returns {Object} - Storage information
+     */
+    getStorageInfo() {
+        try {
+            const flashcards = this.loadFlashcards();
+            const customSources = this.loadCustomSources();
+            const theme = this.loadTheme();
+
+            return {
+                flashcardsCount: flashcards.length,
+                flashcards: flashcards,
+                customSourcesCount: customSources.length,
+                customSources: customSources,
+                theme: theme,
+                rawData: {
+                    flashcards: localStorage.getItem(STORAGE_KEYS.FLASHCARDS),
+                    customSources: localStorage.getItem(STORAGE_KEYS.CUSTOM_SOURCES),
+                    theme: localStorage.getItem(STORAGE_KEYS.THEME)
+                }
+            };
+        } catch (error) {
+            return {
+                error: error.message,
+                flashcardsCount: 0,
+                customSourcesCount: 0
+            };
+        }
+    }
+
+    /**
+     * Force clear all localStorage data (including unknown keys)
+     * @returns {boolean} - Success status
+     */
+    forceClearAll() {
+        try {
+            // Clear all keys that start with 'japanese-flashcards'
+            const keys = Object.keys(localStorage);
+            keys.forEach(key => {
+                if (key.startsWith('japanese-flashcards')) {
+                    localStorage.removeItem(key);
+                }
+            });
+            return true;
+        } catch (error) {
+            console.error('Error force clearing storage:', error);
             return false;
         }
     }
