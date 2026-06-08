@@ -12,12 +12,13 @@ Aplikasi flashcard untuk belajar kosakata bahasa Jepang dari buku IRODORI.
 - ✅ Filter dan shuffle flashcard
 - ✅ Dark mode / Light mode
 - ✅ Penyimpanan lokal (localStorage)
+- ✅ Export/Import data
 
 ## Sumber Buku yang Didukung
 
-1. **IRODORI Beginner Level (A1)**
-2. **IRODORI Basic Level 1 (A1)**
-3. **IRODORI Basic Level 1 (A2)**
+1. **IRODORI Tingkat Pemula (A1)**
+2. **IRODORI Tingkat Dasar 1 (A2)**
+3. **IRODORI Tingkat Dasar 2 (A2)**
 
 ## Cara Menggunakan
 
@@ -50,21 +51,7 @@ Flashcard akan muncul di Bab 1, 2, dan 3.
 
 ### 3. Menambah Flashcard ke Multiple Sumber
 
-Untuk menambahkan kosakata yang sama ke beberapa sumber buku, **buat flashcard terpisah** untuk setiap sumber:
-
-**Flashcard 1:**
-```
-Hiragana: わたし
-Source: IRODORI Beginner Level (A1)
-Chapters: 1
-```
-
-**Flashcard 2:**
-```
-Hiragana: わたし
-Source: IRODORI Basic Level 1 (A1)
-Chapters: 3
-```
+Untuk menambahkan kosakata yang sama ke beberapa sumber buku, **buat flashcard terpisah** untuk setiap sumber atau tambahkan custom source baru.
 
 ### 4. Mengelola Flashcard
 
@@ -131,18 +118,7 @@ Ditampilkan di setiap section sumber, menunjukkan progress untuk sumber tersebut
 - Data disimpan di **localStorage** browser Anda
 - Data **tidak akan hilang** saat menutup browser
 - Data **hanya tersedia di browser yang sama**
-- Untuk backup, Anda perlu export data secara manual (fitur belum tersedia)
-
-### Menghapus Data Lama
-
-Jika Anda masih melihat data dummy lama atau ingin memulai dari awal:
-
-1. Buka file **`clear-storage.html`** di browser
-2. Klik tombol **"🗑️ Hapus Semua Data"**
-3. Konfirmasi penghapusan
-4. Aplikasi akan otomatis kembali ke halaman utama dengan data kosong
-
-**PERINGATAN:** Data yang dihapus tidak dapat dikembalikan!
+- Gunakan fitur **Export/Import** untuk backup dan transfer data
 
 ## Browser Support
 

@@ -12,7 +12,6 @@
     </script>
 </head>
 <body class="bg-white dark:bg-slate-900 min-h-screen flex flex-col transition-colors duration-300">
-    <!-- Header -->
     <header class="bg-white dark:bg-slate-800 shadow-sm border-b border-gray-200 dark:border-slate-700 sticky top-0 z-30">
         <div class="container mx-auto px-4 sm:px-6 py-4">
             <div class="flex justify-between items-center">
@@ -20,12 +19,10 @@
                     <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">📚 FLASHCARD JAPAN</h1>
                 </div>
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <!-- Add Flashcard Button (Desktop only) -->
                     <button id="add-flashcard-btn-desktop" class="hidden sm:flex items-center gap-2 bg-blue-500 hover:bg-blue-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold text-base transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105">
                         <span class="text-xl">+</span>
                         <span>Tambah</span>
                     </button>
-                    <!-- Export/Import Dropdown (Desktop) -->
                     <div class="hidden sm:block relative">
                         <button id="data-menu-btn" class="flex items-center gap-2 bg-gray-500 hover:bg-gray-600 dark:bg-slate-700 dark:hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-semibold text-base transition-all duration-200 shadow-sm hover:shadow-md">
                             <span>💾</span>
@@ -52,7 +49,6 @@
                             </button>
                         </div>
                     </div>
-                    <!-- Export/Import Dropdown (Mobile) -->
                     <div class="sm:hidden relative">
                         <button id="data-menu-btn-mobile" class="p-2 rounded-lg bg-gray-500 hover:bg-gray-600 dark:bg-slate-700 dark:hover:bg-slate-600 text-white transition-all duration-200">
                             <span class="text-xl">💾</span>
@@ -77,7 +73,6 @@
                             </button>
                         </div>
                     </div>
-                    <!-- Theme Toggle -->
                     <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 transition-all duration-200">
                         <span id="theme-icon" class="text-xl">🌙</span>
                     </button>
@@ -86,17 +81,14 @@
         </div>
     </header>
 
-    <!-- Floating Action Button (Mobile) -->
     <button id="add-flashcard-btn" class="sm:hidden fixed bottom-20 right-6 w-16 h-16 bg-blue-500 hover:bg-blue-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 active:scale-95 z-40">
         <span class="text-3xl font-bold flex items-center justify-center w-full h-full">+</span>
     </button>
 
-    <!-- Main Content -->
     <main class="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-grow">
         <div id="main-view"></div>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 mt-auto">
         <div class="container mx-auto px-4 sm:px-6 py-4">
             <p class="text-center text-sm text-gray-600 dark:text-gray-400">
@@ -105,18 +97,12 @@
         </div>
     </footer>
 
-    <!-- Modal Container -->
     <div id="modal-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40"></div>
     <div id="modal-container" class="hidden"></div>
 
-    <!-- Hidden file input for import -->
     <input type="file" id="import-file-input" accept=".json" class="hidden" />
 
-    <!-- Scripts -->
     <script type="module" src="js/main.js"></script>
-    <script>
-        // Set current year
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-    </script>
+    <script>document.getElementById('current-year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

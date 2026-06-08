@@ -57,10 +57,10 @@ class App {
     }
 
     /**
-     * Load dummy data if no flashcards exist
+     * Load dummy data - removed for deployment
      */
     loadDummyDataIfNeeded() {
-        // Dummy data loading removed - users should add their own flashcards
+        // No dummy data - users should add their own flashcards
         return;
     }
 

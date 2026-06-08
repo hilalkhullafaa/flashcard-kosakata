@@ -3,10 +3,10 @@
  * Handles CRUD operations for flashcards
  */
 
-import { Flashcard, VALID_SOURCES } from './flashcard-model.js';
-import { storageManager, StorageError } from './storage-manager.js';
+import { Flashcard } from './flashcard-model.js';
+import { storageManager } from './storage-manager.js';
 
-// Debug mode - set to false to disable console logging
+// Debug mode - disabled for production
 const DEBUG_MODE = false;
 
 // Safe debug logging function

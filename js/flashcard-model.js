@@ -3,7 +3,7 @@
  * Defines the Flashcard class and related data structures
  */
 
-// Valid source constants
+// Valid source constants - 3 tingkat Irodori
 export const VALID_SOURCES = [
     'IRODORI Tingkat Pemula (A1)',
     'IRODORI Tingkat Dasar 1 (A2)',
@@ -25,8 +25,8 @@ export function getAllSources() {
 
 /**
  * Get all sources from existing flashcards (including ones not in storage)
- * This helps detect orphaned custom sources
- * @returns {Array<string>} - Array of all source names found in flashcards
+ * This helps detect orphaned custom sources and removes duplicates
+ * @returns {Array<string>} - Array of unique source names found in flashcards
  */
 export function getAllSourcesFromFlashcards() {
     if (typeof window !== 'undefined' && window.flashcardManager) {
@@ -35,7 +35,7 @@ export function getAllSourcesFromFlashcards() {
         
         flashcards.forEach(fc => {
             if (fc.source && fc.source.trim() !== '') {
-                sourcesSet.add(fc.source);
+                sourcesSet.add(fc.source.trim()); // Trim to avoid duplicates from whitespace
             }
         });
         
@@ -115,7 +115,7 @@ export class Flashcard {
      * @returns {string} - Unique identifier
      */
     generateId() {
-        return `fc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        return `fc_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     }
 
     /**
